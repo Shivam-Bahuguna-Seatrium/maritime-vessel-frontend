@@ -203,6 +203,7 @@ export default function Dashboard({ status, refreshStatus }) {
   };
 
   // ---- Run Validation ----
+  // Auto-triggers graph building after successful validation
   const handleValidate = async () => {
     setLoading('validate');
     setMessage('');
