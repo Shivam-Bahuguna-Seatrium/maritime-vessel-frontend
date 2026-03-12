@@ -149,6 +149,31 @@ export default function Dashboard({ status, refreshStatus }) {
         setSelectedFile(null);
         setDefaultFileName(null);
         if (fileRef.current) fileRef.current.value = '';
+        setLoading('');
+        refreshStatus();
+        
+        // Auto-validate and build graph after upload
+        setTimeout(async () => {
+          setLoading('validate');
+          setMessage('Auto-validating data...');
+          try {
+            const valRes = await fetch(`${API_BASE_URL}/api/validate`, { method: 'POST' });
+            const valData = await valRes.json();
+            if (valRes.ok) {
+              setValidationResult(valData);
+              setMessage('Validation complete. Building knowledge graph...');
+              
+              // Auto-build graph after validation
+              await handleBuildGraph();
+            } else {
+              setMessage(`Error during validation: ${valData.detail}`);
+              setLoading('');
+            }
+          } catch (e) {
+            setMessage(`Auto-validation failed: ${e.message}`);
+            setLoading('');
+          }
+        }, 500);
       } else {
         setMessage(`Error: ${data.detail}`);
       }
@@ -156,7 +181,6 @@ export default function Dashboard({ status, refreshStatus }) {
       setMessage(`Upload failed: ${e.message}`);
     }
     setLoading('');
-    refreshStatus();
   };
 
   // ---- Run Analysis ----
@@ -187,7 +211,10 @@ export default function Dashboard({ status, refreshStatus }) {
       const data = await res.json();
       if (res.ok) {
         setValidationResult(data);
-        setMessage('Validation complete.');
+        setMessage('Validation complete. Building knowledge graph...');
+        
+        // Auto-build graph after validation
+        await handleBuildGraph();
       } else {
         setMessage(`Error: ${data.detail}`);
       }
@@ -201,15 +228,16 @@ export default function Dashboard({ status, refreshStatus }) {
   // ---- Build Knowledge Graph ----
   const handleBuildGraph = async () => {
     setLoading('graph');
-    setMessage('');
     try {
       const res = await fetch(`${API_BASE_URL}/api/build-graph`, { method: 'POST' });
       const data = await res.json();
       if (res.ok) {
         setGraphResult(data);
-        setMessage(`Graph built: ${data.nodes_created} nodes, ${data.relationships_created} relationships.`);
+        const nodeCount = data.nodes_created || 0;
+        const relCount = data.relationships_created || 0;
+        setMessage(`✅ Graph built: ${nodeCount} nodes, ${relCount} relationships.`);
       } else {
-        setMessage(`Error: ${data.detail}`);
+        setMessage(`Error building graph: ${data.detail}`);
       }
     } catch (e) {
       setMessage(`Graph build failed: ${e.message}`);
