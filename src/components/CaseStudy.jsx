@@ -23,8 +23,6 @@ const CaseStudy = () => {
       padding: 'clamp(16px, 5vw, 24px)',
       fontFamily: 'var(--font-sans)',
       color: 'var(--text)',
-      overflowY: 'auto',
-      maxHeight: 'calc(100vh - 100px)',
       lineHeight: '1.6',
     },
     header: {

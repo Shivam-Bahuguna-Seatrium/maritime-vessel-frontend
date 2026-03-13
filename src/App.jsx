@@ -46,7 +46,7 @@ export default function App() {
   }, []);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw', overflow: 'hidden' }}>
       {/* ---- Header (Fixed at top) ---- */}
       <header>
         <h1>
@@ -99,19 +99,19 @@ export default function App() {
       </header>
 
       {/* ---- Body ---- */}
-      <main style={{ flex: 1, overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
+      <main style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
         {tab === 'Dashboard' && (
           <Dashboard status={status} refreshStatus={refreshStatus} />
         )}
 
         {tab === 'Knowledge Graph' && (
-          <div style={{ display: 'flex', gap: 16, flex: 1, minHeight: 0 }} className="kg-layout">
+          <div style={{ display: 'flex', gap: 16, flex: 1, minHeight: 0, overflow: 'hidden' }} className="kg-layout">
             <FilterPanel
               graphBuilt={status.graph_built}
               filters={graphFilters}
               onChange={setGraphFilters}
             />
-            <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }} className="graph-container">
+            <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }} className="graph-container">
               <GraphViewer filters={graphFilters} graphBuilt={status.graph_built} refreshStatus={refreshStatus} />
             </div>
           </div>

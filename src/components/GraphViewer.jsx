@@ -142,13 +142,14 @@ export default function GraphViewer({ filters, graphBuilt }) {
     const nodeCount = visNodes.length;
     const enablePhysics = nodeCount <= 100;
     const stabilizationIterations = nodeCount > 50 ? 50 : 100;
+    const isNewNetwork = !networkRef.current;
 
     const options = {
       physics: {
         enabled: enablePhysics,
         stabilization: { 
           iterations: stabilizationIterations,
-          fit: false, // Disable fit to prevent zoom re-calculations causing height jumps
+          fit: false, // Don't auto-fit during stabilization to prevent view jumps
           updateInterval: 25,
         },
         barnesHut: {
@@ -183,14 +184,12 @@ export default function GraphViewer({ filters, graphBuilt }) {
           setSelected(null);
         }
       });
+      // Fit view only on initial creation to show entire graph
+      networkRef.current.fit({ animation: { duration: 400 } });
       // Stop physics after stabilization to prevent continuous computation
       if (enablePhysics) {
         networkRef.current.once('stabilizationIterationsDone', () => {
           networkRef.current.setOptions({ physics: false });
-          // Fit view after stabilization completes (not during)
-          if (networkRef.current) {
-            networkRef.current.fit({ animation: { duration: 0 } });
-          }
         });
       }
     } else {
@@ -203,10 +202,10 @@ export default function GraphViewer({ filters, graphBuilt }) {
     const resizeObserver = new ResizeObserver(() => {
       clearTimeout(resizeTimeout);
       resizeTimeout = setTimeout(() => {
-        if (networkRef.current) {
+        if (networkRef.current && containerRef.current) {
           networkRef.current.redraw();
         }
-      }, 150); // Debounce resize to prevent excessive redraws
+      }, 250); // Increase debounce to prevent excessive redraws
     });
 
     if (containerRef.current) {
