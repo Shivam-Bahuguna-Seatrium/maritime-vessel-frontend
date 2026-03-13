@@ -170,7 +170,7 @@ export default function ChatPanel({ graphBuilt }) {
   };
 
   return (
-    <div style={{ width: '100%', maxWidth: 900, margin: '0 auto', display: 'flex', flexDirection: 'column', padding: 0 }} className="chat-container">
+    <div style={{ width: '100%', maxWidth: 900, margin: '0 auto', display: 'flex', flexDirection: 'column', padding: 0, gap: 12 }} className="chat-container">
       <h2 style={{ marginBottom: 12, fontSize: 'clamp(1rem, 5vw, 1.2rem)' }}>💬 Chat & Query Builder</h2>
 
       {/* Predefined Queries Section */}

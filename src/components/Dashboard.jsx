@@ -227,7 +227,7 @@ export default function Dashboard({ status, refreshStatus }) {
   };
 
   return (
-    <div style={{ maxWidth: 960, margin: '0 auto', padding: '0 clamp(8px, 3vw, 16px)', width: '100%' }} className="dashboard-container">
+    <div style={{ maxWidth: 960, margin: '0 auto', padding: '0 clamp(8px, 3vw, 16px)', width: '100%', display: 'flex', flexDirection: 'column', gap: 16 }} className="dashboard-container">
       <h2 style={{ marginBottom: 20, fontSize: 'clamp(1.1rem, 4vw, 1.3rem)' }}>Dashboard</h2>
 
       {/* --- Step 1: Upload --- */}
