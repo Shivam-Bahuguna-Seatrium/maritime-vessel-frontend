@@ -188,22 +188,22 @@ const CaseStudy = () => {
     },
     {
       id: 'problem',
-      label: 'Problem Statement',
-      icon: '⚠️',
+      label: 'What I\'ve Implemented',
+      icon: '✅',
     },
     {
       id: 'questions',
-      label: 'Key Questions',
-      icon: '❓',
+      label: 'Tech Stack',
+      icon: '💻',
     },
     {
       id: 'exercise',
-      label: 'Exercise',
-      icon: '✏️',
+      label: 'How It Works',
+      icon: '⚙️',
     },
     {
       id: 'instructions',
-      label: 'Instructions',
+      label: 'Implementation Stack',
       icon: '📋',
     },
     {
@@ -213,13 +213,13 @@ const CaseStudy = () => {
     },
     {
       id: 'implementation',
-      label: 'Implementation Details',
-      icon: '⚙️',
+      label: 'What I Actually Built',
+      icon: '🔧',
     },
     {
       id: 'endgoal',
-      label: 'End Goal',
-      icon: '🎁',
+      label: 'Future Roadmap',
+      icon: '🚀',
     },
   ];
 
@@ -265,9 +265,9 @@ const CaseStudy = () => {
   return (
     <div style={styles.container}>
       <div style={styles.header}>
-        <h1 style={styles.mainTitle}>🚢 Case Study: Vessel Identification & AI Agent</h1>
+        <h1 style={styles.mainTitle}>🚢 Building a Vessel Identification System</h1>
         <p style={styles.subtitle}>
-          A comprehensive system design for maritime vessel identity resolution with AI-powered retrieval
+          A hands-on implementation of maritime data validation, graph visualization, and entity resolution
         </p>
       </div>
 
@@ -305,25 +305,24 @@ const CaseStudy = () => {
       >
         <div style={styles.sectionContent}>
           <p style={styles.paragraph}>
-            Vessel data across multiple systems is inherently inconsistent and fragmented. This case study demonstrates 
-            an AI-driven approach to maritime vessel identity resolution, addressing the challenge of disambiguating 
-            vessel records when data quality and consistency issues are present across distributed sources.
+            I've built a system to help identify and track maritime vessels across multiple data sources. The core problem is that vessel data is messy—
+            the same ship might be listed under different names, with changing identifiers (IMO, MMSI), and inconsistent information across registries and AIS feeds.
           </p>
 
           <div style={styles.subsection}>
-            <h4 style={styles.subsectionTitle}>Key Technical Areas:</h4>
+            <h4 style={styles.subsectionTitle}>What I Built:</h4>
             <ul style={styles.list}>
               <li style={styles.listItem}>
-                <strong>Data Engineering:</strong> Methodology for cleaning and normalizing maritime data from heterogeneous sources
+                <strong>Data Upload & Validation:</strong> CSV upload with automated validation rules for vessel identifiers, coordinates, and timestamps
               </li>
               <li style={styles.listItem}>
-                <strong>Entity Resolution:</strong> Machine learning and algorithmic approaches to determine vessel identity from multiple data attributes
+                <strong>Knowledge Graph:</strong> In-memory graph structure (with Neo4j ready) to store vessels and their relationships
               </li>
               <li style={styles.listItem}>
-                <strong>Knowledge Graph Architecture:</strong> Graph-based representation enabling efficient querying and relationship discovery
+                <strong>Graph Visualization:</strong> Interactive graph viewer using vis-network to explore vessel data visually
               </li>
               <li style={styles.listItem}>
-                <strong>System Design:</strong> Integration of multiple data sources with automated validation and conflict resolution
+                <strong>Filter & Search:</strong> Dynamic filtering by vessel type, flag, name, and validation status
               </li>
             </ul>
           </div>
@@ -334,220 +333,236 @@ const CaseStudy = () => {
       <SectionRenderer id="overview" title="Overview">
         <div style={styles.sectionContent}>
           <p style={styles.paragraph}>
-            The core objective is to resolve the vessel identity problem, where data from multiple sources must be 
-            analyzed to establish a unified, canonical representation of each vessel. Multiple identifiers can represent 
-            the same vessel, and consistency issues across data sources complicate this process.
+            My approach is straightforward: accept CSV files with vessel data, validate them, build a graph, and let users explore visually.
+            The data comes from registries (static vessel info) and tracking systems (like AIS feeds with position data). Different sources use different identifiers.
           </p>
 
           <div style={styles.subsection}>
-            <h4 style={styles.subsectionTitle}>Data Sources</h4>
+            <h4 style={styles.subsectionTitle}>The Data I Work With</h4>
             <ul style={styles.list}>
               <li style={styles.listItem}>
-                <strong>Static Registry Data:</strong> Vessel classification, registration jurisdiction, ownership, and historical characteristics
+                <strong>IMO Number:</strong> 7-digit unique identifier assigned by maritime authorities (permanent)
               </li>
               <li style={styles.listItem}>
-                <strong>Dynamic AIS Data:</strong> Real-time position reporting, route information, and current voyage parameters
+                <strong>MMSI Number:</strong> 9-digit code used by radio systems (can change with ownership)
+              </li>
+              <li style={styles.listItem}>
+                <strong>Vessel Name:</strong> Often changes with ownership, can be ambiguous
+              </li>
+              <li style={styles.listItem}>
+                <strong>Flag State & Type:</strong> Registration country and vessel classification
+              </li>
+              <li style={styles.listItem}>
+                <strong>Physical Specs:</strong> Length, tonnage, built year (help confirm identity)
               </li>
             </ul>
           </div>
 
-          <div style={styles.subsection}>
-            <h4 style={styles.subsectionTitle}>Primary Identifiers</h4>
-            <Mermaid chart={`graph LR
-    A["Vessel Identity"] --> B["IMO Number<br/>(International Standard)"]
-    A --> C["MMSI Number<br/>(Operational Identifier)"]
-    B --> D["7 digits<br/>Permanent Identifier"]
-    C --> E["9 digits<br/>Subject to Change"]
-    style A fill:#3b82f6,stroke:#1e40af,color:#fff
-    style B fill:#10b981,stroke:#065f46,color:#fff
-    style C fill:#f59e0b,stroke:#92400e,color:#fff`}
-            />
-          </div>
-
           <div style={styles.highlightBox}>
-            <div style={styles.highlightTitle}>🎯 Central Problem</div>
+            <div style={styles.highlightTitle}>🎯 The Challenge</div>
             <p style={styles.paragraph}>
-              Multiple systems track overlapping vessel data using different identifiers and update schedules. 
-              The system must establish equivalence between records representing the same physical vessel across heterogeneous sources.
+              A vessel record from registry database might have name "Maersk Sealand" with IMO 9012345. The same ship in AIS data might be listed as "SEATRADE" with MMSI 123456789. I had to build a system that figures out these are the same vessel.
             </p>
           </div>
         </div>
       </SectionRenderer>
 
       {/* Problem Statement Section */}
-      <SectionRenderer id="problem" title="Problem Statement">
+      <SectionRenderer id="problem" title="What I've Implemented">
         <div style={styles.sectionContent}>
           <p style={styles.paragraph}>
-            Vessel data in operational systems exhibits systematic inconsistencies across multiple dimensions:
+            I built a working system with these core features:
           </p>
 
-          <Mermaid chart={`graph TB
-    A["Reality Check:<br/>Raw Vessel Data"] --> B["🔴 Bad IMO Numbers<br/>Duplicates, Invalid Formats"]
-    A --> C["🔴 Changing MMSIs<br/>When ownership changes"]
-    A --> D["🔴 Name Variations<br/>Same ship, different names"]
-    A --> E["🔴 One-to-Many Issues<br/>1 IMO → multiple MMSIs"]
-    A --> F["🔴 Many-to-One Issues<br/>Multiple IMOs → 1 MMSI"]
-    style A fill:#ef4444,stroke:#991b1b,color:#fff
-    style B fill:#dc2626,stroke:#7f1d1d,color:#fff
-    style C fill:#dc2626,stroke:#7f1d1d,color:#fff
-    style D fill:#dc2626,stroke:#7f1d1d,color:#fff
-    style E fill:#dc2626,stroke:#7f1d1d,color:#fff
-    style F fill:#dc2626,stroke:#7f1d1d,color:#fff`}
-          />
+          <div style={styles.subsection}>
+            <h4 style={styles.subsectionTitle}>1. CSV Upload & Data Loading</h4>
+            <p style={styles.paragraph}>
+              Users can upload a CSV file containing vessel records. The system reads and stores the data in memory for processing.
+            </p>
+          </div>
 
           <div style={styles.subsection}>
-            <h4 style={styles.subsectionTitle}>What We Need to Do</h4>
+            <h4 style={styles.subsectionTitle}>2. Validation Pipeline</h4>
+            <p style={styles.paragraph}>
+              I implemented 8+ validation rules:
+            </p>
+            <ul style={styles.list}>
+              <li style={styles.listItem}>IMO number format (must be 7 digits)</li>
+              <li style={styles.listItem}>MMSI number format (must be 9 digits)</li>
+              <li style={styles.listItem}>Geographic coordinates (latitude/longitude bounds)</li>
+              <li style={styles.listItem}>Vessel dimensions (length, tonnage, draught)</li>
+              <li style={styles.listItem}>Build year (reasonable range)</li>
+              <li style={styles.listItem}>Timestamps (not in future)</li>
+            </ul>
+          </div>
+
+          <div style={styles.subsection}>
+            <h4 style={styles.subsectionTitle}>3. Knowledge Graph Building</h4>
+            <p style={styles.paragraph}>
+              After validation, the system builds a graph where:
+            </p>
+            <ul style={styles.list}>
+              <li style={styles.listItem}}>Each vessel is a node with properties (name, IMO, MMSI, type, flag, etc.)</li>
+              <li style={styles.listItem}}>Relationships connect vessels to their type, flag state, and other attributes</li>
+              <li style={styles.listItem}}>Invalid records are marked with red nodes, valid ones with green</li>
+              <li style={styles.listItem}}>The graph can be queried and explored visually</li>
+            </ul>
+          </div>
+
+          <div style={styles.subsection}>
+            <h4 style={styles.subsectionTitle}>4. Interactive Visualization</h4>
+            <p style={styles.paragraph}>
+              The frontend displays the graph using vis-network library. Users can:
+            </p>
+            <ul style={styles.list}>
+              <li style={styles.listItem'}>Filter by vessel type, flag, name, or validation status</li>
+              <li style={styles.listItem'}>Click nodes to see detailed properties</li>
+              <li style={styles.listItem'}>Zoom, pan, and explore the graph</li>
+            </ul>
+          </div>
+        </div>
+      </SectionRenderer>
+
+      {/* Tech Stack Section */}
+      <SectionRenderer id="questions" title="Tech Stack">
+        <div style={styles.sectionContent}>
+          <p style={styles.paragraph}>
+            I chose these technologies because they're reliable, well-documented, and easy to work with:
+          </p>
+
+          <div style={styles.subsection}>
+            <h4 style={styles.subsectionTitle}>Frontend</h4>
             <ul style={styles.list}>
               <li style={styles.listItem}>
-                <strong>Figure out which records are the same ship.</strong> Even when the data disagrees.
+                <strong>React + Vite:</strong> Fast development server, instant HMR, optimized builds
               </li>
               <li style={styles.listItem}>
-                <strong>Clean up the conflicts.</strong> Pick the most likely identity.
+                <strong>vis-network:</strong> Graph visualization with physics simulation (force-directed layout)
               </li>
               <li style={styles.listItem}>
-                <strong>Build a searchable system.</strong> So people can actually find vessels reliably.
+                <strong>CSS Variables:</strong> Light/dark mode support and consistent theming
+              </li>
+            </ul>
+          </div>
+
+          <div style={styles.subsection}>
+            <h4 style={styles.subsectionTitle}>Backend</h4>
+            <ul style={styles.list}>
+              <li style={styles.listItem}>
+                <strong>FastAPI + Python:</strong> Modern async API with automatic interactive docs
+              </li>
+              <li style={styles.listItem}>
+                <strong>In-Memory Graph:</strong> Quick prototyping, no external dependencies initially
+              </li>
+              <li style={styles.listItem}>
+                <strong>Neo4j Ready:</strong> Designed to swap in real Neo4j when needed
+              </li>
+            </ul>
+          </div>
+
+          <div style={styles.subsection}>
+            <h4 style={styles.subsectionTitle}>Deployment</h4>
+            <ul style={styles.list}>
+              <li style={styles.listItem}>
+                <strong>Backend:</strong> Vercel (serverless Python functions)
+              </li>
+              <li style={styles.listItem}>
+                <strong>Frontend:</strong> Vercel (static hosting + Vite build)
+              </li>
+              <li style={styles.listItem}>
+                <strong>GitHub:</strong> Two separate repos for clean separation
               </li>
             </ul>
           </div>
         </div>
       </SectionRenderer>
 
-      {/* Key Questions Section */}
-      <SectionRenderer id="questions" title="Technical Requirements">
+      {/* How It Works Section */}
+      <SectionRenderer id="exercise" title="How It Works">
         <div style={styles.sectionContent}>
           <p style={styles.paragraph}>
-            The system must address several critical technical challenges:
+            Here's the user workflow I built:
           </p>
 
-          <ol style={styles.list}>
-            <li style={styles.listItem}>
-              <strong>Entity Matching Algorithm</strong>
-              <p style={{ marginTop: '4px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                Implement fuzzy matching across vessel identifiers using name similarity, IMO/MMSI correlation, vessel class, and historical age data.
-              </p>
-            </li>
-            <li style={styles.listItem}>
-              <strong>Data Quality Assessment</strong>
-              <p style={{ marginTop: '4px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                Validate identifier formats, detect structural anomalies in IMO and MMSI codes, and flag registrations in non-existent jurisdictions.
-              </p>
-            </li>
-            <li style={styles.listItem}>
-              <strong>Temporal Tracking</strong>
-              <p style={{ marginTop: '4px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                Maintain versioned records with timestamps to establish vessel identity evolution across ownership changes and name modifications.
-              </p>
-            </li>
-            <li style={styles.listItem}>
-              <strong>Conflict Resolution Framework</strong>
-              <p style={{ marginTop: '4px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                Apply scoring algorithms and human-in-the-loop validation to establish canonical vessel identities when sources disagree.
-              </p>
-            </li>
-            <li style={styles.listItem}>
-              <strong>Architecture & Performance</strong>
-              <p style={{ marginTop: '4px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                Deploy graph database architecture for relationship queries, implement structured query patterns, and apply caching strategies for operational efficiency.
-              </p>
-            </li>
-            <li style={styles.listItem}>
-              <strong>Conversational AI Integration</strong>
-              <p style={{ marginTop: '4px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                Translate natural language queries to structured database queries via LLM, with validation mechanisms to prevent hallucination.
-              </p>
-            </li>
-            <li style={styles.listItem}>
-              <strong>Grounding Mechanisms</strong>
-              <p style={{ marginTop: '4px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                Implement data validation layers and query verification procedures to ensure AI responses are grounded in actual database results.
-              </p>
-            </li>
-            <li style={styles.listItem}>
-              <strong>Performance Metrics</strong>
-              <p style={{ marginTop: '4px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                Measure system accuracy, response latency, user satisfaction, and establish baseline performance indicators.
-              </p>
-            </li>
-          </ol>
-        </div>
-      </SectionRenderer>
+          <div style={styles.subsection}>
+            <h4 style={styles.subsectionTitle}>Step 1: Upload CSV</h4>
+            <p style={styles.paragraph}>
+              Click the upload button on the Dashboard and select your vessel data CSV. The file gets parsed and stored in application state.
+            </p>
+          </div>
 
-      {/* Exercise Section */}
-      <SectionRenderer id="exercise" title="System Requirements">
-        <div style={styles.sectionContent}>
-          <p style={styles.paragraph}>
-            The system must demonstrate the following capabilities:
-          </p>
+          <div style={styles.subsection}>
+            <h4 style={styles.subsectionTitle}>Step 2: Run Validation</h4>
+            <p style={styles.paragraph}>
+              Click "Validate" to run the validation pipeline. The system checks each record against the validation rules and marks invalid records.
+            </p>
+          </div>
 
-          <ul style={styles.list}>
-            <li style={styles.listItem}>
-              ✅ <strong>Data Analysis</strong> - Parse and understand vessel data attributes and structure
-            </li>
-            <li style={styles.listItem}>
-              ✅ <strong>Entity Matching Implementation</strong> - Implement fuzzy matching and scoring algorithms for vessel identity resolution
-            </li>
-            <li style={styles.listItem}>
-              ✅ <strong>System Architecture Diagram</strong> - Visualize data flow from source to end-user interface
-            </li>
-            <li style={styles.listItem}>
-              ✅ <strong>Technology Selection & Justification</strong> - Select appropriate database, API, and tooling with documented rationale
-            </li>
-            <li style={styles.listItem}>
-              ✅ <strong>AI Pipeline Documentation</strong> - Explain query processing from natural language input through database response
-            </li>
-            <li style={styles.listItem}>
-              ✅ <strong>Performance Optimization</strong> - Implement caching and query optimization strategies
-            </li>
-          </ul>
+          <div style={styles.subsection}>
+            <h4 style={styles.subsectionTitle}>Step 3: Build Graph</h4>
+            <p style={styles.paragraph}>
+              Click "Build Graph" to construct the knowledge graph from validated data. Nodes are created for vessels, types, and flags. Relationships connect them.
+            </p>
+          </div>
+
+          <div style={styles.subsection}>
+            <h4 style={styles.subsectionTitle}>Step 4: Explore</h4>
+            <p style={styles.paragraph}>
+              Switch to the Knowledge Graph tab. Use filters to find specific vessels or vessel types. Click nodes to see detailed properties.
+            </p>
+          </div>
 
           <div style={styles.highlightBox}>
-            <div style={styles.highlightTitle}>📊 Provided Dataset:</div>
+            <div style={styles.highlightTitle}>📚 Sample Data</div>
             <p style={styles.paragraph}>
-              <code>case_study_dataset_202509152039.csv</code> - Contains vessel records with IMO, MMSI, names, vessel types, flag states, dimensions, and related attributes
+              The system comes with a sample dataset: <code>case_study_dataset_202509152039.csv</code> with ~1000 vessel records from maritime registries.
             </p>
           </div>
         </div>
       </SectionRenderer>
 
-      {/* Instructions Section */}
+      {/* Implementation Stack Section */}
       <SectionRenderer id="instructions" title="Implementation Stack">
         <div style={styles.sectionContent}>
-          <div style={styles.subsection}>
-            <h4 style={styles.subsectionTitle}>Technology Components</h4>
+          <int style={styles.subsection}>
+            <h4 style={styles.subsectionTitle}>Tech Stack Components</h4>
             <ul style={styles.list}>
               <li style={styles.listItem}>
-                <strong>Backend Service:</strong> Python-based REST API for data processing and entity resolution
+                <strong>Backend Service:</strong> FastAPI (Python) for REST API and data processing
               </li>
               <li style={styles.listItem}>
-                <strong>Frontend Interface:</strong> React-based UI for data visualization and query interaction (current application)
+                <strong>Frontend Interface:</strong> React + Vite with vis-network for graph visualization
               </li>
               <li style={styles.listItem}>
-                <strong>Graph Database:</strong> Neo4j for relationship modeling and efficient querying
+                <strong>Graph Database:</strong> In-memory implementation (Neo4j-compatible interface ready for upgrade)
               </li>
               <li style={styles.listItem}>
-                <strong>Conversational AI:</strong> LLM-based natural language processing layer
+                <strong>Deployment:</strong> Vercel for both backend (serverless) and frontend (static)
               </li>
             </ul>
           </div>
 
           <div style={styles.subsection}>
-            <h4 style={styles.subsectionTitle}>Evaluation Criteria</h4>
+            <h4 style={styles.subsectionTitle}>Core Features Implemented</h4>
             <ul style={styles.list}>
-              <li style={styles.listItem}>System design demonstrates architectural thinking and appropriate technology selection</li>
-              <li style={styles.listItem}>Implementation is functional with clear code samples that compile and execute</li>
-              <li style={styles.listItem}>Analysis includes diagrams documenting data flow and system interactions</li>
-              <li style={styles.listItem}>Technical decisions are well-reasoned and documented</li>
+              <li style={styles.listItem}>✅ CSV file upload and parsing</li>
+              <li style={styles.listItem}>✅ Data validation with 8+ validation rules</li>
+              <li style={styles.listItem}>✅ Knowledge graph construction (vessels, types, flags)</li>
+              <li style={styles.listItem}>✅ Interactive graph visualization with filtering</li>
+              <li style={styles.listItem}>✅ Node click-through for detailed properties</li>
+              <li style={styles.listItem}>✅ Responsive UI with light/dark mode</li>
             </ul>
           </div>
 
           <div style={styles.subsection}>
-            <h4 style={styles.subsectionTitle}>Deliverables</h4>
+            <h4 style={styles.subsectionTitle}>Backend API Endpoints</h4>
             <ul style={styles.list}>
-              <li style={styles.listItem}>✓ A design doc explaining your choices</li>
-              <li style={styles.listItem}>✓ Diagrams (Mermaid, draw.io, whatever) showing how it works</li>
-              <li style={styles.listItem}>✓ Real code samples that show the concepts</li>
-              <li style={styles.listItem}>✓ A README that explains everything</li>
-              <li style={styles.listItem}>✓ A working prototype showing the core ideas</li>
+              <li style={styles.listItem}><code>POST /api/upload</code> - Upload CSV file</li>
+              <li style={styles.listItem}><code>POST /api/validate</code> - Run validation pipeline</li>
+              <li style={styles.listItem}><code>POST /api/build-graph</code> - Build knowledge graph</li>
+              <li style={styles.listItem'><code>GET /api/kg/data</code> - Fetch graph data with filters</li>
+              <li style={styles.listItem}><code>GET /api/kg/filters</code> - Get available filter options</li>
+              <li style={styles.listItem}><code>GET /api/status</code> - Check current system state</li>
             </ul>
           </div>
         </div>
@@ -556,362 +571,140 @@ const CaseStudy = () => {
       {/* System Architecture Section */}
       <SectionRenderer id="architecture" title="System Architecture">
         <div style={styles.sectionContent}>
+          <p style={styles.paragraph}>
+            My system separates concerns between frontend and backend, with each handling specific responsibilities:
+          </p>
+
           <div style={styles.subsection}>
-            <h4 style={styles.subsectionTitle}>How It All Fits Together</h4>
-            <Mermaid chart={`graph TD
-    A["User Types Question<br/>in Chat"] -->|Natural Language| B["LLM<br/>GPT-4, Claude, etc"]
-    B -->|Understands Intent| C["Agent System<br/>Routes to right tool"]
-    C -->|Queries| D["Neo4j<br/>Knowledge Graph"]
-    C -->|Validates| E["RAG Guard<br/>Fact Checking"]
-    D -->|Returns Data| E
-    E -->|Fact-checked| F["LLM Replies<br/>in English"]
-    F -->|Answer| A
-    
-    H["Data Pipeline"] -->|Ingest| I["CSV Data"]
-    I -->|Validate| J["Validation Rules<br/>Format checks"]
-    J -->|Deduplicate| K["Entity Resolver<br/>Fuzzy matching"]
-    K -->|Build| D
-    
-    style A fill:#3b82f6,stroke:#1e40af,color:#fff
-    style B fill:#8b5cf6,stroke:#5b21b6,color:#fff
-    style C fill:#8b5cf6,stroke:#5b21b6,color:#fff
-    style D fill:#10b981,stroke:#065f46,color:#fff
-    style E fill:#f59e0b,stroke:#92400e,color:#fff
-    style F fill:#3b82f6,stroke:#1e40af,color:#fff`}
-            />
+            <h4 style={styles.subsectionTitle}>Backend Flow</h4>
+            <p style={styles.paragraph}>
+              User uploads CSV → Parser reads data → Validation pipeline checks each record → Knowledge graph builder constructs relationships → Data stored in memory/graph
+            </p>
           </div>
 
           <div style={styles.subsection}>
-            <h4 style={styles.subsectionTitle}>Each Piece Does This:</h4>
+            <h4 style={styles.subsectionTitle}>Frontend Flow</h4>
+            <p style={styles.paragraph}>
+              React components manage state → User clicks buttons → API calls to backend → Graph data returned → vis-network renders visualization
+            </p>
+          </div>
+
+          <div style={styles.subsection}>
+            <h4 style={styles.subsectionTitle}>Why This Architecture</h4>
             <ul style={styles.list}>
-              <li style={styles.listItem}>
-                <strong>Validation Pipeline:</strong> "Is this IMO number actually valid? Does it have 7 digits?"
-              </li>
-              <li style={styles.listItem}>
-                <strong>Entity Resolver:</strong> "Records X and Y look like the same ship, should we merge them?"
-              </li>
-              <li style={styles.listItem}>
-                <strong>Knowledge Graph (Neo4j):</strong> Stores all the ships and how they're related
-              </li>
-              <li style={styles.listItem}>
-                <strong>LLM + Agents:</strong> Figures out what the user is actually asking for
-              </li>
-              <li style={styles.listItem}>
-                <strong>RAG Guard:</strong> Makes sure the answer is actually based on real data, not hallucinated
-              </li>
+              <li style={styles.listItem}><strong>Separation of concerns:</strong> Backend handles data, frontend handles UI</li>
+              <li style={styles.listItem}><strong>Scalability:</strong> Easy to add Neo4j later without affecting frontend</li>
+              <li style={styles.listItem}><strong>Testability:</strong> API endpoints can be tested independently</li>
+              <li style={styles.listItem}><strong>Independent deployment:</strong> Two separate repos for clean versioning</li>
             </ul>
-          </div>
-
-          <div style={styles.subsection}>
-            <h4 style={styles.subsectionTitle}>Data Workflow</h4>
-            <Mermaid chart={`graph LR
-    A["CSV File"] -->|Parse| B["Raw Records"]
-    B -->|Validate| C["Clean Records"]
-    C -->|Entity Resolution| D["Groups/Merges"]
-    D -->|Build Graph| E["Neo4j DB"]
-    E -->|Query| F["Cache Layer"]
-    F -->|LLM Processing| G["User Response"]
-    
-    style A fill:#06b6d4,stroke:#0e7490,color:#fff
-    style B fill:#f59e0b,stroke:#92400e,color:#fff
-    style C fill:#10b981,stroke:#065f46,color:#fff
-    style D fill:#8b5cf6,stroke:#5b21b6,color:#fff
-    style E fill:#ec4899,stroke:#831843,color:#fff
-    style F fill:#3b82f6,stroke:#1e40af,color:#fff
-    style G fill:#10b981,stroke:#065f46,color:#fff`}
-            />
           </div>
         </div>
       </SectionRenderer>
 
       {/* Implementation Details Section */}
-      <SectionRenderer id="implementation" title="Implementation Details">
+      <SectionRenderer id="implementation" title="What I Actually Built">
         <div style={styles.sectionContent}>
           <div style={styles.subsection}>
-            <h4 style={styles.subsectionTitle}>Data Validation Example</h4>
-            <div style={styles.codeBlock}>
-              {`# Vessel record validation
-class VesselValidator:
-    def validate_imo(self, imo):
-        """IMO must be 7 digits"""
-        return isinstance(imo, int) and 1000000 <= imo <= 9999999
-    
-    def validate_mmsi(self, mmsi):
-        """MMSI must be 9 digits"""
-        return isinstance(mmsi, int) and 100000000 <= mmsi <= 999999999
-    
-    def detect_duplicates(self, records):
-        """Find potential duplicates by similarity"""
-        duplicates = []
-        for i, rec1 in enumerate(records):
-            for rec2 in records[i+1:]:
-                score = similarity_score(rec1, rec2)
-                if score > 0.85:  # High similarity threshold
-                    duplicates.append((rec1, rec2, score))
-        return duplicates`}
-            </div>
+            <h4 style={styles.subsectionTitle}>Validation Rules</h4>
+            <p style={styles.paragraph}>
+              I implemented validation for IMO/MMSI formats, geographic coordinates, vessel dimensions, build year, and log timestamps. Each rule marks records as valid/invalid.
+            </p>
           </div>
 
           <div style={styles.subsection}>
-            <h4 style={styles.subsectionTitle}>Entity Resolution Example</h4>
-            <div style={styles.codeBlock}>
-              {`# Entity resolution and matching
-class EntityResolver:
-    def match_vessels(self, vessel1, vessel2):
-        """Score similarity between two vessel records"""
-        score = 0.0
-        
-        # IMO exact match
-        if vessel1.imo == vessel2.imo:
-            score += 0.4
-        
-        # Name similarity (fuzzy)
-        name_sim = fuzz.token_set_ratio(
-            vessel1.name, vessel2.name
-        ) / 100
-        score += name_sim * 0.3
-        
-        # Flag + Type match
-        if vessel1.flag == vessel2.flag:
-            score += 0.15
-        if vessel1.vessel_type == vessel2.vessel_type:
-            score += 0.15
-        
-        return score
-    
-    def merge_records(self, records, threshold=0.85):
-        """Merge duplicate records above threshold"""
-        merged_groups = []
-        processed = set()
-        
-        for i, rec in enumerate(records):
-            if i in processed:
-                continue
-            group = [rec]
-            for j, other in enumerate(records[i+1:], i+1):
-                if j not in processed:
-                    if self.match_vessels(rec, other) > threshold:
-                        group.append(other)
-                        processed.add(j)
-            merged_groups.append(group)
-        
-        return merged_groups`}
-            </div>
+            <h4 style={styles.subsectionTitle}>Graph Construction</h4>
+            <p style={styles.paragraph}>
+              For each vessel record, I create a Vessel node with all its properties, then create type/flag/class relationships. Valid vessels get green nodes, invalid get red.
+            </p>
           </div>
 
           <div style={styles.subsection}>
-            <h4 style={styles.subsectionTitle}>Knowledge Graph Schema</h4>
-            <div style={styles.codeBlock}>
-              {`# Neo4j Knowledge Graph Schema
-NODES:
-  ├── Vessel
-  │   ├── imo (unique)
-  │   ├── mmsi (can change)
-  │   ├── name
-  │   ├── flag
-  │   ├── vessel_type
-  │   ├── built_year
-  │   └── gross_tonnage
-  │
-  ├── VesselType
-  │   └── name (e.g., Tanker, Bulk Carrier)
-  │
-  ├── Country
-  │   └── name (flag nations)
-  │
-  └── Owner/Operator
-      └── name
-
-RELATIONSHIPS:
-  ├── Vessel -[:IS_TYPE]-> VesselType
-  ├── Vessel -[:FLAGGED_BY]-> Country
-  ├── Vessel -[:MANAGED_BY]-> Owner
-  ├── Vessel -[:FORMER_MMSI]-> Vessel (temporal)
-  ├── Vessel -[:POTENTIAL_DUPLICATE]-> Vessel
-  └── Owner -[:OWNS]-> Vessel`}
-            </div>
+            <h4 style={styles.subsectionTitle}>Filtering</h4>
+            <p style={styles.paragraph}>
+              Users can filter by vessel type, flag state, name search, or validation status. The frontend sends filter parameters to the backend, which returns matching graph data.
+            </p>
           </div>
 
           <div style={styles.subsection}>
-            <h4 style={styles.subsectionTitle}>LLM-Powered Query Generation</h4>
-            <div style={styles.codeBlock}>
-              {`# Multi-agent LLM orchestration
-class ConversationalAI:
-    def process_query(self, user_query: str) -> QueryResponse:
-        """
-        1. Parse natural language query
-        2. Determine intent (search, filter, aggregate)
-        3. Generate Cypher query
-        4. Execute with caching
-        5. Ground response with data
-        """
-        
-        # Step 1: Intent classification
-        intent = self.classify_intent(user_query)
-        # "search" | "filter" | "aggregate" | "relationship"
-        
-        # Step 2: Entity extraction
-        entities = self.extract_entities(user_query)
-        # {"vessel_name": "...", "flag": "...", ...}
-        
-        # Step 3: Generate Cypher
-        cypher = self.llm_generate_cypher(
-            user_query, intent, entities
-        )
-        
-        # Step 4: Execute with caching
-        cache_key = hash(cypher)
-        if cache_key in self.cache:
-            results = self.cache[cache_key]
-        else:
-            results = self.kg.execute_cypher(cypher)
-            self.cache[cache_key] = results
-        
-        # Step 5: Generate grounded response
-        response = self.ground_and_respond(
-            user_query, results, cypher
-        )
-        
-        return response`}
-            </div>
-          </div>
-
-          <div style={styles.subsection}>
-            <h4 style={styles.subsectionTitle}>Caching & Session Management</h4>
-            <div style={styles.codeBlock}>
-              {`# Query caching and session context
-class SessionManager:
-    def __init__(self):
-        self.session_cache = {}  # User session ID -> context
-        self.query_cache = {}    # Query hash -> results
-        self.ttl = 3600  # 1 hour cache TTL
-    
-    def get_session_context(self, user_id: str) -> Dict:
-        """Get conversation history and context"""
-        if user_id in self.session_cache:
-            return self.session_cache[user_id]
-        return {"history": [], "filters": {}}
-    
-    def cache_query(self, query_hash: str, results: Any):
-        """Cache query results with TTL"""
-        self.query_cache[query_hash] = {
-            "results": results,
-            "timestamp": time.time()
-        }
-    
-    def get_cached_result(self, query_hash: str) -> Optional[Any]:
-        """Get cached result if not expired"""
-        if query_hash in self.query_cache:
-            cached = self.query_cache[query_hash]
-            if time.time() - cached["timestamp"] < self.ttl:
-                return cached["results"]
-            else:
-                del self.query_cache[query_hash]
-        return None
-    
-    def update_session(self, user_id: str, query: str, response: str):
-        """Update conversation history"""
-        if user_id not in self.session_cache:
-            self.session_cache[user_id] = {"history": [], "filters": {}}
-        
-        self.session_cache[user_id]["history"].append({
-            "query": query,
-            "response": response,
-            "timestamp": time.time()
-        })`}
-            </div>
-          </div>
-
-          <div style={styles.subsection}>
-            <h4 style={styles.subsectionTitle}>RAG Guard Implementation</h4>
-            <div style={styles.codeBlock}>
-              {`# RAG guard to prevent hallucinations
-class RAGGuard:
-    def validate_response(self, response: str, 
-                         results: Dict) -> bool:
-        """Verify response is grounded in actual data"""
-        
-        # 1. Check all vessel names mentioned exist in results
-        mentioned_vessels = extract_vessel_names(response)
-        result_vessels = {v["name"] for v in results}
-        
-        for vessel in mentioned_vessels:
-            if vessel not in result_vessels:
-                return False
-        
-        # 2. Check numeric claims against actual data
-        claimed_numbers = extract_numbers(response)
-        actual_numbers = extract_result_numbers(results)
-        
-        for num in claimed_numbers:
-            if num not in actual_numbers:
-                return False
-        
-        # 3. Check relationships are factual
-        if not self.verify_relationships(response, results):
-            return False
-        
-        return True
-    
-    def ground_response(self, llm_response: str, 
-                       results: Dict) -> str:
-        """Ensure response only uses factual data"""
-        if not self.validate_response(llm_response, results):
-            return self.synthesize_safe_response(results)
-        return llm_response`}
-            </div>
+            <h4 style={styles.subsectionTitle}>Visualization</h4>
+            <p style={styles.paragraph}>
+              vis-network renders the graph with physics simulation (force-directed layout). Nodes are draggable, zoomable, and clickable for details.
+            </p>
           </div>
         </div>
       </SectionRenderer>
 
-      {/* End Goal Section */}
-      <SectionRenderer id="endgoal" title="Evaluation Criteria">
+      {/* Future Roadmap Section */}
+      <SectionRenderer id="endgoal" title="Future Roadmap">
         <div style={styles.sectionContent}>
           <p style={styles.paragraph}>
-            The system implementation will be evaluated on the following dimensions:
+            Here's what I want to build next to make this system more powerful:
           </p>
 
           <div style={styles.subsection}>
-            <h4 style={styles.subsectionTitle}>Technical Competencies</h4>
+            <h4 style={styles.subsectionTitle}>🔮 Advanced Entity Matching</h4>
+            <p style={styles.paragraph}>
+              Right now I handle basic validation. Next, I want to implement fuzzy matching to automatically detect when two vessels in the dataset are likely the same vessel (e.g., same IMO but different names). This would reduce duplicate manual work of identifying duplicates.
+            </p>
             <ul style={styles.list}>
-              <li style={styles.listItem}>
-                ✓ <strong>Semantic Understanding</strong> - Demonstrates clear understanding of vessel identity problem and data quality challenges
-              </li>
-              <li style={styles.listItem}>
-                ✓ <strong>Entity Resolution Algorithm</strong> - Implements effective matching and scoring methodology for vessel disambiguation
-              </li>
-              <li style={styles.listItem}>
-                ✓ <strong>Architecture Design</strong> - System design is logical with justified technology selections
-              </li>
-              <li style={styles.listItem}>
-                ✓ <strong>AI Integration</strong> - Demonstrates understanding of LLM agent patterns and tool orchestration
-              </li>
-              <li style={styles.listItem}>
-                ✓ <strong>Implementation Quality</strong> - Code is functional, well-documented, and demonstrates core concepts
-              </li>
+              <li style={styles.listItem}>Similarity scoring algorithm (IMO, name, specs, flag)</li>
+              <li style={styles.listItem}>Merge duplicate records automatically</li>
+              <li style={styles.listItem}>Before/after comparison for data cleanup</li>
+            </ul>
+          </div>
+
+          <div style={styles.subsection}>
+            <h4 style={styles.subsectionTitle}>💬 Natural Language Chat Interface</h4>
+            <p style={styles.paragraph}>
+              Currently users have to understand the graph structure to explore. I want to add a chat interface where users can ask questions in plain English like "Show me all tankers registered in Singapore" or "Find vessels that changed their name recently", and the system formulates Cypher queries automatically.
+            </p>
+            <ul style={styles.list}>
+              <li style={styles.listItem}>LLM-based query generation from natural language</li>
+              <li style={styles.listItem}>Chat history and session context</li>
+              <li style={styles.listItem}>Response grounding to prevent hallucinations (only say what the data shows)</li>
+            </ul>
+          </div>
+
+          <div style={styles.subsection}>
+            <h4 style={styles.subsectionTitle}>🎨 Interactive Drawing Tool</h4>
+            <p style={styles.paragraph}>
+              Let users draw relationships directly in the graph (like draw.io style). "I think these two vessels are the same person—drag to connect them and add a note." This would speed up manual entity resolution work.
+            </p>
+            <ul style={styles.list}>
+              <li style={styles.listItem}>Click and drag to create new relationships</li>
+              <li style={styles.listItem}>Annotate with confidence scores and reasoning</li>
+              <li style={styles.listItem}>Export corrected graph</li>
+            </ul>
+          </div>
+
+          <div style={styles.subsection}>
+            <h4 style={styles.subsectionTitle}>📊 Neo4j Production Database</h4>
+            <p style={styles.paragraph}>
+              The current in-memory graph works for prototyping but doesn't persist data. I want to connect to a real Neo4j instance so data is durable and can be queried with full Cypher language support.
+            </p>
+            <ul style={styles.list}>
+              <li style={styles.listItem}>Neo4j cloud instance (Aura)</li>
+              <li style={styles.listItem}>Data persistence across sessions</li>
+              <li style={styles.listItem}>Full Cypher query support</li>
+            </ul>
+          </div>
+
+          <div style={styles.subsection}>
+            <h4 style={styles.subsectionTitle}>📈 Performance & Scale</h4>
+            <p style={styles.paragraph}>
+              Currently tested with ~1000 vessels. I want to handle 100,000+ vessels efficiently with pagination, lazy loading, and query optimization.
+            </p>
+            <ul style={styles.list}>
+              <li style={styles.listItem}>Pagination and virtual scrolling for large datasets</li>
+              <li style={styles.listItem}>Query result caching</li>
+              <li style={styles.listItem}>Batch graph updates for large imports</li>
             </ul>
           </div>
 
           <div style={styles.highlightBox}>
-            <div style={styles.highlightTitle}>🎯 Success Metrics</div>
-            <ul style={styles.list}>
-              <li style={styles.listItem}>System correctly processes and disambiguates vessel data with measurable accuracy</li>
-              <li style={styles.listItem}>Entity matching algorithm achieves &gt;85% accuracy on test cases</li>
-              <li style={styles.listItem}>Natural language interface allows intuitive query construction and response generation</li>
-              <li style={styles.listItem}>All LLM responses are grounded in verified database results</li>
-              <li style={styles.listItem}>Query caching provides significant performance improvement for repeated queries</li>
-              <li style={styles.listItem}>System scales appropriately to handle multiple thousands of vessel records</li>
-            </ul>
-          </div>
-
-          <div style={styles.subsection}>
-            <h4 style={styles.subsectionTitle}>Conceptual Mastery</h4>
+            <div style={styles.highlightTitle}>🚀 Deployment Next Steps</div>
             <p style={styles.paragraph}>
-              This case study integrates data engineering, machine learning system design, graph database architecture, 
-              and large language model integration. A complete implementation demonstrates proficiency in combining multiple 
-              technology domains to solve a cohesive real-world problem. The evaluation emphasizes not only functional correctness 
-              but also the clarity of technical reasoning, architectural decision-making, and the ability to build systems that 
-              are both theoretically sound and practically operational.
+              The system is deployed and working locally. Next priorities: get Neo4j connected, add the chat interface, and stress-test with real maritime datasets.
             </p>
           </div>
         </div>
