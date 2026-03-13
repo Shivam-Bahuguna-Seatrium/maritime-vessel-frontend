@@ -99,14 +99,21 @@ export default function GraphViewer({ filters, graphBuilt }) {
 
   // Handle window resize for responsive graph layout
   useEffect(() => {
+    let resizeTimeout;
     const handleWindowResize = () => {
-      if (networkRef.current && containerRef.current) {
-        networkRef.current.redraw();
-      }
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        if (networkRef.current && containerRef.current) {
+          networkRef.current.redraw();
+        }
+      }, 250); // Debounce resize events to prevent excessive redraws
     };
 
     window.addEventListener('resize', handleWindowResize);
-    return () => window.removeEventListener('resize', handleWindowResize);
+    return () => {
+      clearTimeout(resizeTimeout);
+      window.removeEventListener('resize', handleWindowResize);
+    };
   }, []);
 
   // Render vis-network when graph data changes
@@ -141,7 +148,8 @@ export default function GraphViewer({ filters, graphBuilt }) {
         enabled: enablePhysics,
         stabilization: { 
           iterations: stabilizationIterations,
-          fit: true,
+          fit: false, // Disable fit to prevent zoom re-calculations causing height jumps
+          updateInterval: 25,
         },
         barnesHut: {
           gravitationalConstant: -26000,
@@ -153,7 +161,7 @@ export default function GraphViewer({ filters, graphBuilt }) {
         },
       },
       interaction: {
-        navigationButtons: true,
+        navigationButtons: false, // Disable navigation buttons to prevent layout shift
         keyboard: true,
         zoomView: true,
         dragView: true,
@@ -179,6 +187,10 @@ export default function GraphViewer({ filters, graphBuilt }) {
       if (enablePhysics) {
         networkRef.current.once('stabilizationIterationsDone', () => {
           networkRef.current.setOptions({ physics: false });
+          // Fit view after stabilization completes (not during)
+          if (networkRef.current) {
+            networkRef.current.fit({ animation: { duration: 0 } });
+          }
         });
       }
     } else {
@@ -187,10 +199,14 @@ export default function GraphViewer({ filters, graphBuilt }) {
     }
 
     // Handle container resize for web mode responsive layout
+    let resizeTimeout;
     const resizeObserver = new ResizeObserver(() => {
-      if (networkRef.current) {
-        networkRef.current.redraw();
-      }
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        if (networkRef.current) {
+          networkRef.current.redraw();
+        }
+      }, 150); // Debounce resize to prevent excessive redraws
     });
 
     if (containerRef.current) {
@@ -198,6 +214,7 @@ export default function GraphViewer({ filters, graphBuilt }) {
     }
 
     return () => {
+      clearTimeout(resizeTimeout);
       resizeObserver.disconnect();
     };
   }, [graphData]);
