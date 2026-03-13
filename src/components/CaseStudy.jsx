@@ -258,16 +258,37 @@ const CaseStudy = () => {
             {sections.find((s) => s.id === id)?.icon}
           </span>
           <h2 style={styles.sectionTitle}>{title}</h2>
-          <span
-            style={{
-              ...styles.toggleIcon,
-              transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
-            }}
-          >
-            ▼
-          </span>
         </div>
-        {isExpanded && <div style={styles.sectionContent}>{children}</div>}
+        {isExpanded && (
+          <div>
+            <div style={styles.sectionContent}>{children}</div>
+            <div
+              style={{
+                ...styles.sectionHeader,
+                cursor: 'pointer',
+                textAlign: 'center',
+                marginTop: '16px',
+              }}
+              onClick={() => toggleSection(id)}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = 'var(--primary)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = 'var(--border)';
+              }}
+            >
+              <span
+                style={{
+                  ...styles.toggleIcon,
+                  display: 'inline-block',
+                  transform: 'rotate(180deg)',
+                }}
+              >
+                ▼
+              </span>
+            </div>
+          </div>
+        )}
       </div>
     );
   };
@@ -938,20 +959,7 @@ const CaseStudy = () => {
                 <p style={{color: 'var(--text)', marginBottom: '16px', fontSize: '14px', lineHeight: '1.6'}}>
                   Upload a vessel CSV file and watch the system validate each record in real-time. See which records pass all checks and which ones fail.
                 </p>
-                <button style={{
-                  background: '#0277bd',
-                  color: '#fff',
-                  border: 'none',
-                  padding: '10px 24px',
-                  borderRadius: '6px',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                  width: '100%'
-                }}
-                onClick={() => window.location.href = '/#dashboard'}>
-                  Go to Dashboard →
-                </button>
+                <p style={{color: '#0277bd', fontWeight: 700, fontSize: '14px', marginTop: '16px'}}>→ Go to Dashboard</p>
               </div>
 
               {/* Card 2: Knowledge Graph */}
@@ -976,20 +984,7 @@ const CaseStudy = () => {
                 <p style={{color: 'var(--text)', marginBottom: '16px', fontSize: '14px', lineHeight: '1.6'}}>
                   Explore the interactive visualization. Click on vessels to see details, filter by type or flag, zoom through the graph, and spot relationships between vessels.
                 </p>
-                <button style={{
-                  background: '#00796b',
-                  color: '#fff',
-                  border: 'none',
-                  padding: '10px 24px',
-                  borderRadius: '6px',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                  width: '100%'
-                }}
-                onClick={() => window.location.href = '/#kg'}>
-                  Go to Knowledge Graph →
-                </button>
+                <p style={{color: '#00796b', fontWeight: 700, fontSize: '14px', marginTop: '16px'}}>→ Go to Knowledge Graph</p>
               </div>
 
               {/* Card 3: Chat */}
@@ -1014,20 +1009,7 @@ const CaseStudy = () => {
                 <p style={{color: 'var(--text)', marginBottom: '16px', fontSize: '14px', lineHeight: '1.6'}}>
                   Ask questions about your vessel data in natural language. The AI will query the knowledge graph and provide grounded, factual answers based on what you've validated.
                 </p>
-                <button style={{
-                  background: '#c62828',
-                  color: '#fff',
-                  border: 'none',
-                  padding: '10px 24px',
-                  borderRadius: '6px',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                  width: '100%'
-                }}
-                onClick={() => window.location.href = '/#chat'}>
-                  Go to Chat →
-                </button>
+                <p style={{color: '#c62828', fontWeight: 700, fontSize: '14px', marginTop: '16px'}}>→ Go to Chat</p>
               </div>
             </div>
 

@@ -6,7 +6,7 @@ import FilterPanel from './components/FilterPanel';
 import CaseStudy from './components/CaseStudy';
 import DEBUG from './debug';
 
-const TABS = ['Dashboard', 'Knowledge Graph', 'Chat', 'Case Study'];
+const TABS = ['Case Study', 'Dashboard', 'Knowledge Graph', 'Chat'];
 
 // Get API base URL from environment or default to relative path
 const DEFAULT_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
