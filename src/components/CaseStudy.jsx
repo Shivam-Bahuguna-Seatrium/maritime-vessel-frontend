@@ -305,25 +305,25 @@ const CaseStudy = () => {
       >
         <div style={styles.sectionContent}>
           <p style={styles.paragraph}>
-            Alright, so here's the thing. We're dealing with vessel data - it's messy, inconsistent, and spread across different systems. 
-            This case study is about really thinking through how you'd build an AI system to figure out what vessel is what, 
-            even when the data's all over the place.
+            Vessel data across multiple systems is inherently inconsistent and fragmented. This case study demonstrates 
+            an AI-driven approach to maritime vessel identity resolution, addressing the challenge of disambiguating 
+            vessel records when data quality and consistency issues are present across distributed sources.
           </p>
 
           <div style={styles.subsection}>
-            <h4 style={styles.subsectionTitle}>What You'll Actually Need to Show:</h4>
+            <h4 style={styles.subsectionTitle}>Key Technical Areas:</h4>
             <ul style={styles.list}>
               <li style={styles.listItem}>
-                <strong>Data Engineering:</strong> How do you actually clean up messy maritime data?
+                <strong>Data Engineering:</strong> Methodology for cleaning and normalizing maritime data from heterogeneous sources
               </li>
               <li style={styles.listItem}>
-                <strong>AI Problem Solving:</strong> When you have 3 records that might be the same ship, how do you figure it out?
+                <strong>Entity Resolution:</strong> Machine learning and algorithmic approaches to determine vessel identity from multiple data attributes
               </li>
               <li style={styles.listItem}>
-                <strong>System Thinking:</strong> What tools would actually work? Neo4j? PostgreSQL? Vector databases?
+                <strong>Knowledge Graph Architecture:</strong> Graph-based representation enabling efficient querying and relationship discovery
               </li>
               <li style={styles.listItem}>
-                <strong>Communication:</strong> Can you explain your choices clearly? With code examples, diagrams, the whole thing.
+                <strong>System Design:</strong> Integration of multiple data sources with automated validation and conflict resolution
               </li>
             </ul>
           </div>
@@ -334,29 +334,30 @@ const CaseStudy = () => {
       <SectionRenderer id="overview" title="Overview">
         <div style={styles.sectionContent}>
           <p style={styles.paragraph}>
-            OK so basically we need to solve the "which ship is which" problem. We've got vessel data from two main sources, 
-            and they don't always agree on who's who. That's what we're dealing with here.
+            The core objective is to resolve the vessel identity problem, where data from multiple sources must be 
+            analyzed to establish a unified, canonical representation of each vessel. Multiple identifiers can represent 
+            the same vessel, and consistency issues across data sources complicate this process.
           </p>
 
           <div style={styles.subsection}>
-            <h4 style={styles.subsectionTitle}>Where the Data Comes From</h4>
+            <h4 style={styles.subsectionTitle}>Data Sources</h4>
             <ul style={styles.list}>
               <li style={styles.listItem}>
-                <strong>Registry Data:</strong> Static stuff like the vessel type, what country it's registered in, who owns it, that kind of thing
+                <strong>Static Registry Data:</strong> Vessel classification, registration jurisdiction, ownership, and historical characteristics
               </li>
               <li style={styles.listItem}>
-                <strong>AIS Data:</strong> Real-time updates on where the ship is, what route it's taking, current voyage info
+                <strong>Dynamic AIS Data:</strong> Real-time position reporting, route information, and current voyage parameters
               </li>
             </ul>
           </div>
 
           <div style={styles.subsection}>
-            <h4 style={styles.subsectionTitle}>The Identifiers We Use</h4>
+            <h4 style={styles.subsectionTitle}>Primary Identifiers</h4>
             <Mermaid chart={`graph LR
-    A["Vessel Identity"] --> B["IMO Number<br/>(Should be unique)"]
-    A --> C["MMSI Number<br/>(Can change over time)"]
-    B --> D["7 digits<br/>Rarely changes"]
-    C --> E["9 digits<br/>Changes when ownership shifts"]
+    A["Vessel Identity"] --> B["IMO Number<br/>(International Standard)"]
+    A --> C["MMSI Number<br/>(Operational Identifier)"]
+    B --> D["7 digits<br/>Permanent Identifier"]
+    C --> E["9 digits<br/>Subject to Change"]
     style A fill:#3b82f6,stroke:#1e40af,color:#fff
     style B fill:#10b981,stroke:#065f46,color:#fff
     style C fill:#f59e0b,stroke:#92400e,color:#fff`}
@@ -364,10 +365,10 @@ const CaseStudy = () => {
           </div>
 
           <div style={styles.highlightBox}>
-            <div style={styles.highlightTitle}>💡 The Big Challenge</div>
+            <div style={styles.highlightTitle}>🎯 Central Problem</div>
             <p style={styles.paragraph}>
-              Two systems tracking the same ship but using different data. Sometimes they agree, sometimes they don't. 
-              We need to figure out when they're talking about the same vessel.
+              Multiple systems track overlapping vessel data using different identifiers and update schedules. 
+              The system must establish equivalence between records representing the same physical vessel across heterogeneous sources.
             </p>
           </div>
         </div>
@@ -377,7 +378,7 @@ const CaseStudy = () => {
       <SectionRenderer id="problem" title="Problem Statement">
         <div style={styles.sectionContent}>
           <p style={styles.paragraph}>
-            Real vessel data is a mess. Here's what we're actually dealing with:
+            Vessel data in operational systems exhibits systematic inconsistencies across multiple dimensions:
           </p>
 
           <Mermaid chart={`graph TB
@@ -412,59 +413,59 @@ const CaseStudy = () => {
       </SectionRenderer>
 
       {/* Key Questions Section */}
-      <SectionRenderer id="questions" title="Key Questions">
+      <SectionRenderer id="questions" title="Technical Requirements">
         <div style={styles.sectionContent}>
           <p style={styles.paragraph}>
-            These are the real questions you need to answer when building this system:
+            The system must address several critical technical challenges:
           </p>
 
           <ol style={styles.list}>
             <li style={styles.listItem}>
-              <strong>How do you actually tell if two records are the same ship?</strong>
+              <strong>Entity Matching Algorithm</strong>
               <p style={{ marginTop: '4px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                Look at name similarity, IMO/MMSI matches, vessel type, age... basically a fuzzy matching problem.
+                Implement fuzzy matching across vessel identifiers using name similarity, IMO/MMSI correlation, vessel class, and historical age data.
               </p>
             </li>
             <li style={styles.listItem}>
-              <strong>What records are clearly broken?</strong>
+              <strong>Data Quality Assessment</strong>
               <p style={{ marginTop: '4px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                IMO with wrong number of digits? MMSI that doesn't make sense? Flag that doesn't exist? Mark them.
+                Validate identifier formats, detect structural anomalies in IMO and MMSI codes, and flag registrations in non-existent jurisdictions.
               </p>
             </li>
             <li style={styles.listItem}>
-              <strong>How do you track when a ship changes names or ownership?</strong>
+              <strong>Temporal Tracking</strong>
               <p style={{ marginTop: '4px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                Keep timestamps. Build a timeline. Show the history.
+                Maintain versioned records with timestamps to establish vessel identity evolution across ownership changes and name modifications.
               </p>
             </li>
             <li style={styles.listItem}>
-              <strong>Can you actually build a "correct" vessel database?</strong>
+              <strong>Conflict Resolution Framework</strong>
               <p style={{ marginTop: '4px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                Yeah. Get humans to review conflicts, build consensus, trust the signals.
+                Apply scoring algorithms and human-in-the-loop validation to establish canonical vessel identities when sources disagree.
               </p>
             </li>
             <li style={styles.listItem}>
-              <strong>What's the actual architecture?</strong>
+              <strong>Architecture & Performance</strong>
               <p style={{ marginTop: '4px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                Neo4j for relationships. Structured queries. Maybe vector search. Smart caching.
+                Deploy graph database architecture for relationship queries, implement structured query patterns, and apply caching strategies for operational efficiency.
               </p>
             </li>
             <li style={styles.listItem}>
-              <strong>How does a chatbot fit into all this?</strong>
+              <strong>Conversational AI Integration</strong>
               <p style={{ marginTop: '4px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                LLM converts natural language to database queries. Talks back in plain English.
+                Translate natural language queries to structured database queries via LLM, with validation mechanisms to prevent hallucination.
               </p>
             </li>
             <li style={styles.listItem}>
-              <strong>How do you stop the AI from making stuff up?</strong>
+              <strong>Grounding Mechanisms</strong>
               <p style={{ marginTop: '4px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                Ground everything in actual data. Validation checks. Ask the database to verify.
+                Implement data validation layers and query verification procedures to ensure AI responses are grounded in actual database results.
               </p>
             </li>
             <li style={styles.listItem}>
-              <strong>How do you measure if it actually works?</strong>
+              <strong>Performance Metrics</strong>
               <p style={{ marginTop: '4px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                Accuracy metrics, user feedback, how fast responses come back.
+                Measure system accuracy, response latency, user satisfaction, and establish baseline performance indicators.
               </p>
             </li>
           </ol>
@@ -472,75 +473,75 @@ const CaseStudy = () => {
       </SectionRenderer>
 
       {/* Exercise Section */}
-      <SectionRenderer id="exercise" title="Exercise">
+      <SectionRenderer id="exercise" title="System Requirements">
         <div style={styles.sectionContent}>
           <p style={styles.paragraph}>
-            We've given you vessel data. Here's what you need to do with it:
+            The system must demonstrate the following capabilities:
           </p>
 
           <ul style={styles.list}>
             <li style={styles.listItem}>
-              ✅ <strong>Look at the data</strong> - Figure out what each column means
+              ✅ <strong>Data Analysis</strong> - Parse and understand vessel data attributes and structure
             </li>
             <li style={styles.listItem}>
-              ✅ <strong>Write some code to match vessels</strong> - Fuzzy matching, scoring, all that
+              ✅ <strong>Entity Matching Implementation</strong> - Implement fuzzy matching and scoring algorithms for vessel identity resolution
             </li>
             <li style={styles.listItem}>
-              ✅ <strong>Draw the system</strong> - How would data flow from CSV to chatbot?
+              ✅ <strong>System Architecture Diagram</strong> - Visualize data flow from source to end-user interface
             </li>
             <li style={styles.listItem}>
-              ✅ <strong>Pick your tools</strong> - Database? API? Why that choice?
+              ✅ <strong>Technology Selection & Justification</strong> - Select appropriate database, API, and tooling with documented rationale
             </li>
             <li style={styles.listItem}>
-              ✅ <strong>Show how the AI actually works</strong> - User asks → LLM thinks → Queries DB → Returns answer
+              ✅ <strong>AI Pipeline Documentation</strong> - Explain query processing from natural language input through database response
             </li>
             <li style={styles.listItem}>
-              ✅ <strong>Implement caching</strong> - Same query asked twice? Use the cached result
+              ✅ <strong>Performance Optimization</strong> - Implement caching and query optimization strategies
             </li>
           </ul>
 
           <div style={styles.highlightBox}>
-            <div style={styles.highlightTitle}>📊 You Get This Dataset:</div>
+            <div style={styles.highlightTitle}>📊 Provided Dataset:</div>
             <p style={styles.paragraph}>
-              <code>case_study_dataset_202509152039.csv</code> - Lot of vessel records with IMO, MMSI, names, types, countries, sizes, etc
+              <code>case_study_dataset_202509152039.csv</code> - Contains vessel records with IMO, MMSI, names, vessel types, flag states, dimensions, and related attributes
             </p>
           </div>
         </div>
       </SectionRenderer>
 
       {/* Instructions Section */}
-      <SectionRenderer id="instructions" title="Instructions">
+      <SectionRenderer id="instructions" title="Implementation Stack">
         <div style={styles.sectionContent}>
           <div style={styles.subsection}>
-            <h4 style={styles.subsectionTitle}>Tech Stack</h4>
+            <h4 style={styles.subsectionTitle}>Technology Components</h4>
             <ul style={styles.list}>
               <li style={styles.listItem}>
-                <strong>Backend:</strong> Python (obviously)
+                <strong>Backend Service:</strong> Python-based REST API for data processing and entity resolution
               </li>
               <li style={styles.listItem}>
-                <strong>Frontend:</strong> React - what you're looking at right now
+                <strong>Frontend Interface:</strong> React-based UI for data visualization and query interaction (current application)
               </li>
               <li style={styles.listItem}>
-                <strong>Database:</strong> Neo4j - for the graph 
+                <strong>Graph Database:</strong> Neo4j for relationship modeling and efficient querying
               </li>
               <li style={styles.listItem}>
-                <strong>AI:</strong> OpenAI or whatever LLM you want
+                <strong>Conversational AI:</strong> LLM-based natural language processing layer
               </li>
             </ul>
           </div>
 
           <div style={styles.subsection}>
-            <h4 style={styles.subsectionTitle}>Just Focus On</h4>
+            <h4 style={styles.subsectionTitle}>Evaluation Criteria</h4>
             <ul style={styles.list}>
-              <li style={styles.listItem}>Good design, not a perfect implementation</li>
-              <li style={styles.listItem}>Showing your thinking process</li>
-              <li style={styles.listItem}>Real code samples that actually work</li>
-              <li style={styles.listItem}>Clear diagrams and explanations</li>
+              <li style={styles.listItem}>System design demonstrates architectural thinking and appropriate technology selection</li>
+              <li style={styles.listItem}>Implementation is functional with clear code samples that compile and execute</li>
+              <li style={styles.listItem}>Analysis includes diagrams documenting data flow and system interactions</li>
+              <li style={styles.listItem}>Technical decisions are well-reasoned and documented</li>
             </ul>
           </div>
 
           <div style={styles.subsection}>
-            <h4 style={styles.subsectionTitle}>What You Need to Deliver</h4>
+            <h4 style={styles.subsectionTitle}>Deliverables</h4>
             <ul style={styles.list}>
               <li style={styles.listItem}>✓ A design doc explaining your choices</li>
               <li style={styles.listItem}>✓ Diagrams (Mermaid, draw.io, whatever) showing how it works</li>
@@ -864,52 +865,53 @@ class RAGGuard:
       </SectionRenderer>
 
       {/* End Goal Section */}
-      <SectionRenderer id="endgoal" title="End Goal">
+      <SectionRenderer id="endgoal" title="Evaluation Criteria">
         <div style={styles.sectionContent}>
           <p style={styles.paragraph}>
-            At the end, you should be able to show us:
+            The system implementation will be evaluated on the following dimensions:
           </p>
 
           <div style={styles.subsection}>
-            <h4 style={styles.subsectionTitle}>The Main Things We're Looking For</h4>
+            <h4 style={styles.subsectionTitle}>Technical Competencies</h4>
             <ul style={styles.list}>
               <li style={styles.listItem}>
-                ✓ <strong>You get the problem</strong> - You understand why vessel data is messy and what we're trying to solve
+                ✓ <strong>Semantic Understanding</strong> - Demonstrates clear understanding of vessel identity problem and data quality challenges
               </li>
               <li style={styles.listItem}>
-                ✓ <strong>You have a solution</strong> - Show how you'd match vessels, score similarity, deduplicate
+                ✓ <strong>Entity Resolution Algorithm</strong> - Implements effective matching and scoring methodology for vessel disambiguation
               </li>
               <li style={styles.listItem}>
-                ✓ <strong>Your system design makes sense</strong> - Database choice, API design, caching strategy all reasonable
+                ✓ <strong>Architecture Design</strong> - System design is logical with justified technology selections
               </li>
               <li style={styles.listItem}>
-                ✓ <strong>The AI layer is real</strong> - Not just talking about it, show actual LLM + tool use patterns
+                ✓ <strong>AI Integration</strong> - Demonstrates understanding of LLM agent patterns and tool orchestration
               </li>
               <li style={styles.listItem}>
-                ✓ <strong>You have actual working code</strong> - Validation logic, entity resolution, query generation
+                ✓ <strong>Implementation Quality</strong> - Code is functional, well-documented, and demonstrates core concepts
               </li>
             </ul>
           </div>
 
           <div style={styles.highlightBox}>
-            <div style={styles.highlightTitle}>🎯 Success Looks Like</div>
+            <div style={styles.highlightTitle}>🎯 Success Metrics</div>
             <ul style={styles.list}>
-              <li style={styles.listItem}>System actually handles real messy vessel data correctly</li>
-              <li style={styles.listItem}>Your matching algorithm works (85%+ accuracy is good)</li>
-              <li style={styles.listItem}>Users can ask questions in plain English and get answers</li>
-              <li style={styles.listItem}>Responses are grounded in real data, not made up by the AI</li>
-              <li style={styles.listItem}>Repeated queries are fast because of caching</li>
-              <li style={styles.listItem}>System can handle lots of vessel records without breaking</li>
+              <li style={styles.listItem}>System correctly processes and disambiguates vessel data with measurable accuracy</li>
+              <li style={styles.listItem}>Entity matching algorithm achieves >85% accuracy on test cases</li>
+              <li style={styles.listItem}>Natural language interface allows intuitive query construction and response generation</li>
+              <li style={styles.listItem}>All LLM responses are grounded in verified database results</li>
+              <li style={styles.listItem}>Query caching provides significant performance improvement for repeated queries</li>
+              <li style={styles.listItem}>System scales appropriately to handle multiple thousands of vessel records</li>
             </ul>
           </div>
 
           <div style={styles.subsection}>
-            <h4 style={styles.subsectionTitle}>The Big Picture</h4>
+            <h4 style={styles.subsectionTitle}>Conceptual Mastery</h4>
             <p style={styles.paragraph}>
-              This case study brings together data engineering, AI design, system architecture, and practical coding. 
-              You're showing that you can think through a messy real-world problem, design a solution that actually works, 
-              and implement it in a way that's maintainable and scalable. That's the whole thing.
-            </p>
+              This case study integrates data engineering, machine learning system design, graph database architecture, 
+              and large language model integration. A complete implementation demonstrates proficiency in combining multiple 
+              technology domains to solve a cohesive real-world problem. The evaluation emphasizes not only functional correctness 
+              but also the clarity of technical reasoning, architectural decision-making, and the ability to build systems that 
+              are both theoretically sound and practically operational.
           </div>
         </div>
       </SectionRenderer>

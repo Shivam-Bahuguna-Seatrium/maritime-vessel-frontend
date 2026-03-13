@@ -149,31 +149,6 @@ export default function Dashboard({ status, refreshStatus }) {
         setSelectedFile(null);
         setDefaultFileName(null);
         if (fileRef.current) fileRef.current.value = '';
-        setLoading('');
-        refreshStatus();
-        
-        // Auto-validate and build graph after upload
-        setTimeout(async () => {
-          setLoading('validate');
-          setMessage('Auto-validating data...');
-          try {
-            const valRes = await fetch(`${API_BASE_URL}/api/validate`, { method: 'POST' });
-            const valData = await valRes.json();
-            if (valRes.ok) {
-              setValidationResult(valData);
-              setMessage('Validation complete. Building knowledge graph...');
-              
-              // Auto-build graph after validation
-              await handleBuildGraph();
-            } else {
-              setMessage(`Error during validation: ${valData.detail}`);
-              setLoading('');
-            }
-          } catch (e) {
-            setMessage(`Auto-validation failed: ${e.message}`);
-            setLoading('');
-          }
-        }, 500);
       } else {
         setMessage(`Error: ${data.detail}`);
       }
@@ -181,6 +156,7 @@ export default function Dashboard({ status, refreshStatus }) {
       setMessage(`Upload failed: ${e.message}`);
     }
     setLoading('');
+    refreshStatus();
   };
 
   // ---- Run Analysis ----
@@ -212,10 +188,7 @@ export default function Dashboard({ status, refreshStatus }) {
       const data = await res.json();
       if (res.ok) {
         setValidationResult(data);
-        setMessage('Validation complete. Building knowledge graph...');
-        
-        // Auto-build graph after validation
-        await handleBuildGraph();
+        setMessage('✅ Validation complete. Click "Build Graph" to visualize.');
       } else {
         setMessage(`Error: ${data.detail}`);
       }
