@@ -375,6 +375,35 @@ const CaseStudy = () => {
           </p>
 
           <div style={styles.subsection}>
+            <h4 style={styles.subsectionTitle}>End-to-End Data Flow</h4>
+            <Mermaid chart={`
+graph LR
+    CSV["📄 CSV File"]
+    Upload["📤 Upload"]
+    Parser["📥 Parse Data"]
+    Validate["✅ Validate"]
+    Build["🔗 Build Graph"]
+    Visualize["📊 Visualize"]
+    Export["💾 Explore"]
+    
+    CSV -->|User uploads| Upload
+    Upload -->|Extract rows| Parser
+    Parser -->|Check rules| Validate
+    Validate -->|Create nodes| Build
+    Build -->|Render graph| Visualize
+    Visualize -->|Filter & search| Export
+    
+    style CSV fill:#fff9c4
+    style Upload fill:#bbdefb
+    style Parser fill:#e1bee7
+    style Validate fill:#ffccbc
+    style Build fill:#c8e6c9
+    style Visualize fill:#f0f4c3
+    style Export fill:#d1c4e9
+            `} />
+          </div>
+
+          <div style={styles.subsection}>
             <h4 style={styles.subsectionTitle}>1. CSV Upload & Data Loading</h4>
             <p style={styles.paragraph}>
               Users can upload a CSV file containing vessel records. The system reads and stores the data in memory for processing.
@@ -386,6 +415,24 @@ const CaseStudy = () => {
             <p style={styles.paragraph}>
               I implemented 8+ validation rules:
             </p>
+            <Mermaid chart={`
+graph TD
+    A["📋 Vessel Record"] --> B{IMO Valid?}
+    B -->|❌ No| I["🔴 Invalid"]
+    B -->|✅ Yes| C{MMSI Valid?}
+    C -->|❌ No| I
+    C -->|✅ Yes| D{Coordinates Valid?}
+    D -->|❌ No| I
+    D -->|✅ Yes| E{Dimensions Valid?}
+    E -->|❌ No| I
+    E -->|✅ Yes| F{Year/Timestamp Valid?}
+    F -->|❌ No| I
+    F -->|✅ Yes| G["🟢 Valid"]
+    
+    style A fill:#fff9c4
+    style I fill:#ffcdd2
+    style G fill:#c8e6c9
+            `} />
             <ul style={styles.list}>
               <li style={styles.listItem}>IMO number format (must be 7 digits)</li>
               <li style={styles.listItem}>MMSI number format (must be 9 digits)</li>
@@ -401,6 +448,28 @@ const CaseStudy = () => {
             <p style={styles.paragraph}>
               After validation, the system builds a graph where:
             </p>
+            <Mermaid chart={`
+graph LR
+    V1["🚢 VESSEL 1<br/>Name: Tanker A<br/>IMO: 1234567<br/>Flag: Singapore"]
+    VT["⚓ TANKER<br/>Type"]
+    C1["🌍 SINGAPORE<br/>Country"]
+    
+    V2["🚢 VESSEL 2<br/>Name: Bulk X<br/>MMSI: 123456789<br/>Flag: China"]
+    VT2["⚓ BULK CARRIER<br/>Type"]
+    C2["🌍 CHINA<br/>Country"]
+    
+    V1 -->|IS_TYPE| VT
+    V1 -->|FLAGGED_BY| C1
+    V2 -->|IS_TYPE| VT2
+    V2 -->|FLAGGED_BY| C2
+    
+    style V1 fill:#c8e6c9
+    style V2 fill:#c8e6c9
+    style VT fill:#bbdefb
+    style VT2 fill:#bbdefb
+    style C1 fill:#ffe0b2
+    style C2 fill:#ffe0b2
+            `} />
             <ul style={styles.list}>
               <li style={styles.listItem}>Each vessel is a node with properties (name, IMO, MMSI, type, flag, etc.)</li>
               <li style={styles.listItem}>Relationships connect vessels to their type, flag state, and other attributes</li>
@@ -483,6 +552,21 @@ const CaseStudy = () => {
           <p style={styles.paragraph}>
             Here's the user workflow I built:
           </p>
+
+          <div style={styles.subsection}>
+            <h4 style={styles.subsectionTitle}>Workflow Overview</h4>
+            <Mermaid chart={`
+graph LR
+    A["📤 Upload CSV"] -->|Select file| B["✅ Validate Data"]
+    B -->|Check rules| C["🔗 Build Graph"]
+    C -->|Create nodes| D["🔍 Explore Graph"]
+    
+    style A fill:#e1f5ff
+    style B fill:#f3e5f5
+    style C fill:#e8f5e9
+    style D fill:#fff3e0
+            `} />
+          </div>
 
           <div style={styles.subsection}>
             <h4 style={styles.subsectionTitle}>Step 1: Upload CSV</h4>
@@ -574,6 +658,54 @@ const CaseStudy = () => {
           <p style={styles.paragraph}>
             My system separates concerns between frontend and backend, with each handling specific responsibilities:
           </p>
+
+          <div style={styles.subsection}>
+            <h4 style={styles.subsectionTitle}>System Design</h4>
+            <Mermaid chart={`
+graph TB
+    subgraph Frontend["🖥️ FRONTEND (React + Vite)"]
+        UI["User Interface<br/>Dashboard | Graph | Chat | Case Study"]
+        State["State Management<br/>Upload, Validate, GraphData"]
+        Filter["Filter Panel<br/>Type, Flag, Name, Status"]
+    end
+    
+    subgraph API["📡 API GATEWAY (FastAPI)"]
+        Upload["/api/upload"]
+        Validate["/api/validate"]
+        Build["/api/build-graph"]
+        Query["/api/kg/data"]
+        Status["/api/status"]
+    end
+    
+    subgraph Backend["⚙️ BACKEND (Python)"]
+        Parser["CSV Parser<br/>Read & Structure"]
+        Rules["Validation Rules<br/>8+ format checks"]
+        Graph["Graph Builder<br/>Nodes & Relationships"]
+        Store["Data Store<br/>In-Memory | Neo4j Ready"]
+    end
+    
+    UI -->|Click Upload| Upload
+    UI -->|Click Validate| Validate
+    UI -->|Click Build Graph| Build
+    UI -->|Query/Filter| Query
+    
+    Upload --> Parser
+    Validate --> Rules
+    Build --> Graph
+    Query --> Store
+    
+    Graph --> Store
+    Parser --> Store
+    Rules --> Store
+    
+    Store -->|Return Data| Query
+    Store -->|Return Status| Status
+    
+    style Frontend fill:#e3f2fd
+    style API fill:#f3e5f5
+    style Backend fill:#e8f5e9
+            `} />
+          </div>
 
           <div style={styles.subsection}>
             <h4 style={styles.subsectionTitle}>Backend Flow</h4>
