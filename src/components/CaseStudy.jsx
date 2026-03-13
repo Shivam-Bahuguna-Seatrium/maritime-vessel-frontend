@@ -375,31 +375,17 @@ const CaseStudy = () => {
           </p>
 
           <div style={styles.subsection}>
-            <h4 style={styles.subsectionTitle}>End-to-End Data Flow</h4>
+            <h4 style={styles.subsectionTitle}>Processing Pipeline</h4>
             <Mermaid chart={`
 graph LR
-    CSV["📄 CSV File"]
-    Upload["📤 Upload"]
-    Parser["📥 Parse Data"]
-    Validate["✅ Validate"]
-    Build["🔗 Build Graph"]
-    Visualize["📊 Visualize"]
-    Export["💾 Explore"]
+    A["📤 Upload"] --> B["✅ Validate"]
+    B --> C["🔗 Build"]
+    C --> D["🔍 Explore"]
     
-    CSV -->|User uploads| Upload
-    Upload -->|Extract rows| Parser
-    Parser -->|Check rules| Validate
-    Validate -->|Create nodes| Build
-    Build -->|Render graph| Visualize
-    Visualize -->|Filter & search| Export
-    
-    style CSV fill:#fff9c4
-    style Upload fill:#bbdefb
-    style Parser fill:#e1bee7
-    style Validate fill:#ffccbc
-    style Build fill:#c8e6c9
-    style Visualize fill:#f0f4c3
-    style Export fill:#d1c4e9
+    style A stroke:#0277bd,stroke-width:2px,fill:#e3f2fd
+    style B stroke:#0277bd,stroke-width:2px,fill:#e3f2fd
+    style C stroke:#0277bd,stroke-width:2px,fill:#e3f2fd
+    style D stroke:#0277bd,stroke-width:2px,fill:#e3f2fd
             `} />
           </div>
 
@@ -417,21 +403,14 @@ graph LR
             </p>
             <Mermaid chart={`
 graph TD
-    A["📋 Vessel Record"] --> B{IMO Valid?}
-    B -->|❌ No| I["🔴 Invalid"]
-    B -->|✅ Yes| C{MMSI Valid?}
-    C -->|❌ No| I
-    C -->|✅ Yes| D{Coordinates Valid?}
-    D -->|❌ No| I
-    D -->|✅ Yes| E{Dimensions Valid?}
-    E -->|❌ No| I
-    E -->|✅ Yes| F{Year/Timestamp Valid?}
-    F -->|❌ No| I
-    F -->|✅ Yes| G["🟢 Valid"]
+    A["Record"] --> B{Valid?}
+    B -->|✓ Yes| C["Valid"]
+    B -->|✗ No| D["Invalid"]
     
-    style A fill:#fff9c4
-    style I fill:#ffcdd2
-    style G fill:#c8e6c9
+    style A stroke:#0277bd,stroke-width:2px,fill:#e3f2fd
+    style B stroke:#0277bd,stroke-width:2px,fill:#fff9e6
+    style C stroke:#0277bd,stroke-width:2px,fill:#c8e6c9
+    style D stroke:#0277bd,stroke-width:2px,fill:#ffcdd2
             `} />
             <ul style={styles.list}>
               <li style={styles.listItem}>IMO number format (must be 7 digits)</li>
@@ -450,25 +429,12 @@ graph TD
             </p>
             <Mermaid chart={`
 graph LR
-    V1["🚢 VESSEL 1<br/>Name: Tanker A<br/>IMO: 1234567<br/>Flag: Singapore"]
-    VT["⚓ TANKER<br/>Type"]
-    C1["🌍 SINGAPORE<br/>Country"]
+    V["Vessel"] --> T["Type"]
+    V --> F["Flag"]
     
-    V2["🚢 VESSEL 2<br/>Name: Bulk X<br/>MMSI: 123456789<br/>Flag: China"]
-    VT2["⚓ BULK CARRIER<br/>Type"]
-    C2["🌍 CHINA<br/>Country"]
-    
-    V1 -->|IS_TYPE| VT
-    V1 -->|FLAGGED_BY| C1
-    V2 -->|IS_TYPE| VT2
-    V2 -->|FLAGGED_BY| C2
-    
-    style V1 fill:#c8e6c9
-    style V2 fill:#c8e6c9
-    style VT fill:#bbdefb
-    style VT2 fill:#bbdefb
-    style C1 fill:#ffe0b2
-    style C2 fill:#ffe0b2
+    style V stroke:#0277bd,stroke-width:2px,fill:#c8e6c9
+    style T stroke:#0277bd,stroke-width:2px,fill:#bbdefb
+    style F stroke:#0277bd,stroke-width:2px,fill:#ffe0b2
             `} />
             <ul style={styles.list}>
               <li style={styles.listItem}>Each vessel is a node with properties (name, IMO, MMSI, type, flag, etc.)</li>
@@ -554,17 +520,17 @@ graph LR
           </p>
 
           <div style={styles.subsection}>
-            <h4 style={styles.subsectionTitle}>Workflow Overview</h4>
+            <h4 style={styles.subsectionTitle}>4-Step Workflow</h4>
             <Mermaid chart={`
 graph LR
-    A["📤 Upload CSV"] -->|Select file| B["✅ Validate Data"]
-    B -->|Check rules| C["🔗 Build Graph"]
-    C -->|Create nodes| D["🔍 Explore Graph"]
+    A["1️⃣ Upload"] --> B["2️⃣ Validate"]
+    B --> C["3️⃣ Build"]
+    C --> D["4️⃣ Explore"]
     
-    style A fill:#e1f5ff
-    style B fill:#f3e5f5
-    style C fill:#e8f5e9
-    style D fill:#fff3e0
+    style A stroke:#0277bd,stroke-width:2px,fill:#e3f2fd
+    style B stroke:#0277bd,stroke-width:2px,fill:#e3f2fd
+    style C stroke:#0277bd,stroke-width:2px,fill:#e3f2fd
+    style D stroke:#0277bd,stroke-width:2px,fill:#e3f2fd
             `} />
           </div>
 
@@ -660,50 +626,21 @@ graph LR
           </p>
 
           <div style={styles.subsection}>
-            <h4 style={styles.subsectionTitle}>System Design</h4>
+            <h4 style={styles.subsectionTitle}>System Architecture</h4>
             <Mermaid chart={`
-graph TB
-    subgraph Frontend["🖥️ FRONTEND (React + Vite)"]
-        UI["User Interface<br/>Dashboard | Graph | Chat | Case Study"]
-        State["State Management<br/>Upload, Validate, GraphData"]
-        Filter["Filter Panel<br/>Type, Flag, Name, Status"]
-    end
+graph LR
+    UI["Frontend"]
+    API["API Gateway"]
+    LOGIC["Backend Logic"]
     
-    subgraph API["📡 API GATEWAY (FastAPI)"]
-        Upload["/api/upload"]
-        Validate["/api/validate"]
-        Build["/api/build-graph"]
-        Query["/api/kg/data"]
-        Status["/api/status"]
-    end
+    UI -->|HTTP| API
+    API -->|Routes| LOGIC
+    LOGIC -->|Data| API
+    API -->|Response| UI
     
-    subgraph Backend["⚙️ BACKEND (Python)"]
-        Parser["CSV Parser<br/>Read & Structure"]
-        Rules["Validation Rules<br/>8+ format checks"]
-        Graph["Graph Builder<br/>Nodes & Relationships"]
-        Store["Data Store<br/>In-Memory | Neo4j Ready"]
-    end
-    
-    UI -->|Click Upload| Upload
-    UI -->|Click Validate| Validate
-    UI -->|Click Build Graph| Build
-    UI -->|Query/Filter| Query
-    
-    Upload --> Parser
-    Validate --> Rules
-    Build --> Graph
-    Query --> Store
-    
-    Graph --> Store
-    Parser --> Store
-    Rules --> Store
-    
-    Store -->|Return Data| Query
-    Store -->|Return Status| Status
-    
-    style Frontend fill:#e3f2fd
-    style API fill:#f3e5f5
-    style Backend fill:#e8f5e9
+    style UI stroke:#0277bd,stroke-width:2px,fill:#e3f2fd
+    style API stroke:#0277bd,stroke-width:2px,fill:#fff9e6
+    style LOGIC stroke:#0277bd,stroke-width:2px,fill:#e8f5e9
             `} />
           </div>
 
