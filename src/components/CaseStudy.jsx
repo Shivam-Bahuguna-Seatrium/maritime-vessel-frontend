@@ -101,6 +101,7 @@ const CaseStudy = () => {
     },
     subsection: {
       marginBottom: '24px',
+      marginTop: '12px',
     },
     subsectionTitle: {
       fontSize: 'clamp(1rem, 3vw, 1.15rem)',
@@ -113,6 +114,7 @@ const CaseStudy = () => {
       lineHeight: '1.6',
       marginBottom: '12px',
       color: 'var(--text)',
+      fontWeight: 500,
       fontSize: 'clamp(0.85rem, 2.5vw, 0.95rem)',
     },
     list: {
@@ -123,6 +125,7 @@ const CaseStudy = () => {
       marginBottom: '8px',
       lineHeight: '1.6',
       color: 'var(--text)',
+      fontWeight: 500,
       fontSize: 'clamp(0.85rem, 2.5vw, 0.95rem)',
     },
     codeBlock: {
@@ -429,12 +432,19 @@ graph TD
             </p>
             <Mermaid chart={`
 graph LR
-    V["Vessel"] --> T["Type"]
-    V --> F["Flag"]
+    A["📊 Build Graph"]
+    B["🚢 Vessel<br/>Nodes"]
+    C["⚓ Type<br/>Relationships"]
+    D["🌍 Flag<br/>Connections"]
     
-    style V stroke:#0277bd,stroke-width:2px,fill:#c8e6c9
-    style T stroke:#0277bd,stroke-width:2px,fill:#bbdefb
-    style F stroke:#0277bd,stroke-width:2px,fill:#ffe0b2
+    A --> B
+    B --> C
+    C --> D
+    
+    style A stroke:#0277bd,stroke-width:2px
+    style B stroke:#0277bd,stroke-width:2px
+    style C stroke:#0277bd,stroke-width:2px
+    style D stroke:#0277bd,stroke-width:2px
             `} />
             <ul style={styles.list}>
               <li style={styles.listItem}>Each vessel is a node with properties (name, IMO, MMSI, type, flag, etc.)</li>
