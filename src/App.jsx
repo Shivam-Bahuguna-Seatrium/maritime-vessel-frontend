@@ -22,6 +22,8 @@ export default function App() {
     validated: false,
     graph_built: false,
   });
+  const [graphData, setGraphData] = useState(null); // Cache all graph data
+  const [filterOptions, setFilterOptions] = useState(null); // Cache filter options
 
   // Log app initialization
   useEffect(() => {
@@ -58,6 +60,39 @@ export default function App() {
       DEBUG.apiError('GET', `${DEFAULT_API_URL}/api/status`, err);
     }
   }, []);
+
+  // Load all graph data once when graph is built
+  useEffect(() => {
+    if (status.graph_built && !graphData) {
+      const loadGraphData = async () => {
+        try {
+          DEBUG.log('APP', '📊 Loading all graph data...');
+          
+          // Load both graph data and filter options in parallel
+          const [graphRes, filterRes] = await Promise.all([
+            fetch(`${DEFAULT_API_URL}/api/kg/data?limit=10000`),
+            fetch(`${DEFAULT_API_URL}/api/kg/filters`),
+          ]);
+
+          if (graphRes.ok) {
+            const gData = await graphRes.json();
+            setGraphData(gData);
+            DEBUG.info('APP', `Loaded ${gData.nodes?.length || 0} nodes and ${gData.relationships?.length || 0} relationships`);
+          }
+
+          if (filterRes.ok) {
+            const fData = await filterRes.json();
+            setFilterOptions(fData);
+            DEBUG.info('APP', 'Loaded filter options', fData);
+          }
+        } catch (err) {
+          DEBUG.apiError('APP', 'Loading graph data', err);
+        }
+      };
+
+      loadGraphData();
+    }
+  }, [status.graph_built, graphData]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw', overflow: 'hidden', position: 'relative' }}>
@@ -148,15 +183,21 @@ export default function App() {
               graphBuilt={status.graph_built}
               filters={graphFilters}
               onChange={setGraphFilters}
+              filterOptions={filterOptions}
             />
             <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }} className="graph-container">
-              <GraphViewer filters={graphFilters} graphBuilt={status.graph_built} refreshStatus={refreshStatus} />
+              <GraphViewer 
+                filters={graphFilters} 
+                graphBuilt={status.graph_built} 
+                refreshStatus={refreshStatus}
+                rawGraphData={graphData}
+              />
             </div>
           </div>
         )}
 
         {tab === 'Chat' && (
-          <ChatPanel graphBuilt={status.graph_built} />
+          <ChatPanel graphBuilt={status.graph_built} rawGraphData={graphData} />
         )}
 
         {tab === 'Case Study' && (

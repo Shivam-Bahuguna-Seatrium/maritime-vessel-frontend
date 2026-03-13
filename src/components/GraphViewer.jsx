@@ -3,7 +3,7 @@ import DEBUG from '../debug';
 import { API_BASE_URL } from '../api';
 import { Network } from 'vis-network';
 
-export default function GraphViewer({ filters, graphBuilt }) {
+export default function GraphViewer({ filters, graphBuilt, rawGraphData }) {
   const [graphData, setGraphData] = useState({ nodes: [], relationships: [] });
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -12,76 +12,123 @@ export default function GraphViewer({ filters, graphBuilt }) {
   const networkRef = useRef(null);
   const containerRef = useRef(null);
 
-  // Fetch vessel count when graph is built
+  // Set vessel count from cached data
   useEffect(() => {
     if (!graphBuilt) return;
-    DEBUG.log('GRAPHVIEWER', 'Fetching vessel count...');
-    DEBUG.api('GET', `${API_BASE_URL}/api/kg/filters`);
-    fetch(`${API_BASE_URL}/api/kg/filters`)
-      .then(r => {
-        DEBUG.apiResponse('GET', `${API_BASE_URL}/api/kg/filters`, r.status);
-        return r.json();
-      })
-      .then(data => {
-        DEBUG.info('GRAPHVIEWER', 'Filters API response received', data);
-        const count = data.vessel_count || data.vessel_names?.length || 0;
-        DEBUG.log('GRAPHVIEWER', `Setting vessel count to: ${count}`);
-        setVesselCount(count);
-      })
-      .catch(err => {
-        DEBUG.apiError('GET', '/api/kg/filters', err);
-      });
-  }, [graphBuilt]);
+    
+    if (rawGraphData?.nodes) {
+      const vessels = rawGraphData.nodes.filter(n => n.labels?.includes('Vessel'));
+      DEBUG.log('GRAPHVIEWER', `Setting vessel count to: ${vessels.length}`);
+      setVesselCount(vessels.length);
+    } else {
+      // Fallback to API call
+      DEBUG.log('GRAPHVIEWER', 'Fetching vessel count from API...');
+      DEBUG.api('GET', `${API_BASE_URL}/api/kg/filters`);
+      fetch(`${API_BASE_URL}/api/kg/filters`)
+        .then(r => {
+          DEBUG.apiResponse('GET', `${API_BASE_URL}/api/kg/filters`, r.status);
+          return r.json();
+        })
+        .then(data => {
+          DEBUG.info('GRAPHVIEWER', 'Filters API response received', data);
+          const count = data.vessel_count || data.vessel_names?.length || 0;
+          DEBUG.log('GRAPHVIEWER', `Setting vessel count to: ${count}`);
+          setVesselCount(count);
+        })
+        .catch(err => {
+          DEBUG.apiError('GET', '/api/kg/filters', err);
+        });
+    }
+  }, [graphBuilt, rawGraphData]);
 
-  // Fetch graph data whenever filters change
+  // Apply filters client-side instead of fetching from API
   const fetchGraph = useCallback(async () => {
     if (!graphBuilt) return;
     setLoading(true);
-    DEBUG.log('GRAPHVIEWER', 'Fetching graph data with filters', filters);
+    DEBUG.log('GRAPHVIEWER', 'Applying filters to graph data', filters);
+    
     try {
-      const params = new URLSearchParams();
+      let data = rawGraphData ? { ...rawGraphData } : { nodes: [], relationships: [] };
       
-      // Apply filters - Category → Vessel Type → Vessel Name → Flag → Validation Status
-      if (filters.category) params.set('category', filters.category);
-      if (filters.vessel_type) params.set('vessel_type', filters.vessel_type);
-      if (filters.vessel_name) params.set('vessel_name', filters.vessel_name);
-      if (filters.flag) params.set('flag', filters.flag);
-      if (filters.validation_status) params.set('validation_status', filters.validation_status);
+      if (!data.nodes || data.nodes.length === 0) {
+        // If no cached data, fetch from API (fallback)
+        DEBUG.log('GRAPHVIEWER', 'No cached data, fetching from API...');
+        const params = new URLSearchParams();
+        if (filters.category) params.set('category', filters.category);
+        if (filters.vessel_type) params.set('vessel_type', filters.vessel_type);
+        if (filters.vessel_name) params.set('vessel_name', filters.vessel_name);
+        if (filters.flag) params.set('flag', filters.flag);
+        if (filters.validation_status) params.set('validation_status', filters.validation_status);
 
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
-      
-      // Use new dedicated knowledge graph router
-      const url = `${API_BASE_URL}/api/kg/data?${params}`;
-      DEBUG.api('GET', url);
-      const res = await fetch(url, { signal: controller.signal });
-      clearTimeout(timeoutId);
-      DEBUG.apiResponse('GET', url, res.status);
-      
-      if (res.ok) {
-        let data = await res.json();
-        DEBUG.info('GRAPHVIEWER', `Received ${data.nodes?.length} nodes and ${data.relationships?.length} relationships`);
+        const url = `${API_BASE_URL}/api/kg/data?${params}`;
+        DEBUG.api('GET', url);
+        const res = await fetch(url);
+        DEBUG.apiResponse('GET', url, res.status);
         
-        // Frontend-side limiting if too many nodes
-        if (data.nodes && data.nodes.length > dataLimit) {
-          const vessels = data.nodes.filter(n => n.labels?.includes('Vessel'));
-          const others = data.nodes.filter(n => !n.labels?.includes('Vessel'));
-          const limitedVessels = vessels.slice(0, dataLimit);
-          const limitedVesselIds = new Set(limitedVessels.map(v => v.id));
-          const limitedRels = data.relationships.filter(r => limitedVesselIds.has(r.startNode));
-          
-          data = {
-            nodes: [...limitedVessels, ...others.slice(0, 100)],
-            relationships: limitedRels,
-          };
-          DEBUG.log('GRAPHVIEWER', `Limited to ${limitedVessels.length} vessels`);
+        if (res.ok) {
+          data = await res.json();
+        }
+      } else {
+        // Client-side filtering on cached data
+        DEBUG.log('GRAPHVIEWER', 'Filtering cached graph data...');
+        let filteredNodes = [...data.nodes];
+        
+        // Apply filters
+        if (filters.category) {
+          filteredNodes = filteredNodes.filter(n => 
+            n.properties?.category === filters.category || n.category === filters.category
+          );
+        }
+        if (filters.vessel_type) {
+          filteredNodes = filteredNodes.filter(n => 
+            n.properties?.vessel_type === filters.vessel_type || n.vessel_type === filters.vessel_type
+          );
+        }
+        if (filters.vessel_name) {
+          filteredNodes = filteredNodes.filter(n => 
+            n.id === filters.vessel_name || n.properties?.name === filters.vessel_name || n.name === filters.vessel_name
+          );
+        }
+        if (filters.flag) {
+          filteredNodes = filteredNodes.filter(n => 
+            n.properties?.flag === filters.flag || n.flag === filters.flag
+          );
+        }
+        if (filters.validation_status) {
+          filteredNodes = filteredNodes.filter(n => 
+            n.properties?.validation_status === filters.validation_status || n.validation_status === filters.validation_status
+          );
         }
         
-        setGraphData(data || { nodes: [], relationships: [] });
-      } else {
-        DEBUG.error('GRAPHVIEWER', `Graph fetch error: ${res.status} ${res.statusText}`);
-        setGraphData({ nodes: [], relationships: [] });
+        // Filter relationships based on filtered nodes
+        const filteredNodeIds = new Set(filteredNodes.map(n => n.id));
+        const filteredRels = data.relationships?.filter(r => 
+          filteredNodeIds.has(r.startNode) && filteredNodeIds.has(r.endNode)
+        ) || [];
+        
+        data = {
+          nodes: filteredNodes,
+          relationships: filteredRels,
+        };
+        DEBUG.log('GRAPHVIEWER', `Filtered to ${filteredNodes.length} nodes and ${filteredRels.length} relationships`);
       }
+      
+      // Limit nodes for performance
+      if (data.nodes && data.nodes.length > dataLimit) {
+        const vessels = data.nodes.filter(n => n.labels?.includes('Vessel'));
+        const others = data.nodes.filter(n => !n.labels?.includes('Vessel'));
+        const limitedVessels = vessels.slice(0, dataLimit);
+        const limitedVesselIds = new Set(limitedVessels.map(v => v.id));
+        const limitedRels = data.relationships.filter(r => limitedVesselIds.has(r.startNode));
+        
+        data = {
+          nodes: [...limitedVessels, ...others.slice(0, 100)],
+          relationships: limitedRels,
+        };
+        DEBUG.log('GRAPHVIEWER', `Limited to ${limitedVessels.length} vessels`);
+      }
+      
+      setGraphData(data || { nodes: [], relationships: [] });
     } catch (err) {
       if (err.name === 'AbortError') {
         DEBUG.warn('GRAPHVIEWER', 'Graph fetch timeout - try adjusting filters');
@@ -91,7 +138,7 @@ export default function GraphViewer({ filters, graphBuilt }) {
       setGraphData({ nodes: [], relationships: [] });
     }
     setLoading(false);
-  }, [filters, graphBuilt, dataLimit]);
+  }, [filters, graphBuilt, dataLimit, rawGraphData]);
 
   useEffect(() => { 
     fetchGraph(); 
