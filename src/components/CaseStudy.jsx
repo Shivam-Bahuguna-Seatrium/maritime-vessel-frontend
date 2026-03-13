@@ -432,6 +432,27 @@ graph TD
             <p style={styles.paragraph}>
               After validation, the system builds a graph where each vessel becomes a node, connected to its type and flag information. Valid records appear in green, invalid ones in red.
             </p>
+            <Mermaid chart={`
+graph LR
+    V1["Vessel<br/>Tanker"]:::valid
+    V2["Vessel<br/>Bulk"]:::valid
+    V3["Vessel<br/>Invalid"]:::invalid
+    
+    T1["Type<br/>Tanker"]
+    T2["Type<br/>Bulk Carrier"]
+    
+    F1["Flag<br/>Singapore"]
+    F2["Flag<br/>Japan"]
+    
+    V1 --> T1
+    V1 --> F1
+    V2 --> T2
+    V2 --> F2
+    V3 --> T1
+    
+    classDef valid fill:#c8e6c9,stroke:#0277bd,stroke-width:2px,color:#000
+    classDef invalid fill:#ffcdd2,stroke:#d32f2f,stroke-width:2px,color:#000
+            `} />
             <ul style={styles.list}>
               <li style={styles.listItem}><strong>Vessel Nodes:</strong> Each vessel is a node with all properties (name, IMO, MMSI, type, flag, dimensions, build year)</li>
               <li style={styles.listItem}><strong>Relationships:</strong> Nodes connect to their type (Tanker, Bulk Carrier, etc.) and flag state (Singapore, Japan, etc.)</li>
@@ -443,12 +464,37 @@ graph TD
           <div style={styles.subsection}>
             <h4 style={styles.subsectionTitle}>4. Interactive Visualization</h4>
             <p style={styles.paragraph}>
-              The frontend displays the graph using vis-network library. Users can:
+              The frontend displays the graph using vis-network library. Users can interact with the visualization in multiple ways:
             </p>
+            <Mermaid chart={`
+graph TB
+    subgraph VIS["📊 Visualization Features"]
+        F["🔍 Filter<br/>Type, Flag, Name"]
+        C["👆 Click<br/>Node Details"]
+        Z["🔎 Zoom<br/>Explore"]
+    end
+    
+    subgraph INT["User Interactions"]
+        P["Pan Graph"]
+        D["Drag Nodes"]
+        Q["Query Data"]
+    end
+    
+    VIS --> INT
+    
+    style VIS fill:#e3f2fd,stroke:#0277bd,stroke-width:2px,color:#000
+    style INT fill:#f0f4c3,stroke:#0277bd,stroke-width:2px,color:#000
+    style F fill:#fff,stroke:#0277bd,stroke-width:1px,color:#000
+    style C fill:#fff,stroke:#0277bd,stroke-width:1px,color:#000
+    style Z fill:#fff,stroke:#0277bd,stroke-width:1px,color:#000
+    style P fill:#fff,stroke:#0277bd,stroke-width:1px,color:#000
+    style D fill:#fff,stroke:#0277bd,stroke-width:1px,color:#000
+    style Q fill:#fff,stroke:#0277bd,stroke-width:1px,color:#000
+            `} />
             <ul style={styles.list}>
-              <li style={styles.listItem}>Filter by vessel type, flag, name, or validation status</li>
-              <li style={styles.listItem}>Click nodes to see detailed properties</li>
-              <li style={styles.listItem}>Zoom, pan, and explore the graph</li>
+              <li style={styles.listItem}><strong>Filter:</strong> Filter by vessel type, flag, name, or validation status</li>
+              <li style={styles.listItem}><strong>Click for Details:</strong> Click nodes to see all detailed properties</li>
+              <li style={styles.listItem}><strong>Zoom & Pan:</strong> Zoom, pan, and freely explore the entire graph</li>
             </ul>
           </div>
         </div>
