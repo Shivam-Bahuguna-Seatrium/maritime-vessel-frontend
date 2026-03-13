@@ -433,16 +433,27 @@ graph TD
               After validation, the system builds a graph where each vessel becomes a node, connected to its type and flag information. Valid records appear in green, invalid ones in red.
             </p>
             <Mermaid chart={`
-graph LR
-    V1["Vessel<br/>Tanker"]:::valid
-    V2["Vessel<br/>Bulk"]:::valid
-    V3["Vessel<br/>Invalid"]:::invalid
+%%{init: {'flowchart': {'htmlLabels': true}}}%%
+graph TD
+    A["<b>VESSEL NODES</b><br/>Green = Valid / Red = Invalid"]
     
-    T1["Type<br/>Tanker"]
-    T2["Type<br/>Bulk Carrier"]
+    V1["<b>Vessel 1</b><br/>Tanker"]:::valid
+    V2["<b>Vessel 2</b><br/>Bulk Carrier"]:::valid
+    V3["<b>Vessel 3</b><br/>Invalid"]:::invalid
     
-    F1["Flag<br/>Singapore"]
-    F2["Flag<br/>Japan"]
+    B[""]
+    
+    T1["<b>TYPE</b><br/>Tanker"]
+    T2["<b>TYPE</b><br/>Bulk Carrier"]
+    
+    C[""]
+    
+    F1["<b>FLAG</b><br/>Singapore"]
+    F2["<b>FLAG</b><br/>Japan"]
+    
+    A --> V1
+    A --> V2
+    A --> V3
     
     V1 --> T1
     V1 --> F1
@@ -450,8 +461,17 @@ graph LR
     V2 --> F2
     V3 --> T1
     
-    classDef valid fill:#c8e6c9,stroke:#0277bd,stroke-width:2px,color:#000
-    classDef invalid fill:#ffcdd2,stroke:#d32f2f,stroke-width:2px,color:#000
+    classDef valid fill:#c8e6c9,stroke:#0277bd,stroke-width:3px,color:#000
+    classDef invalid fill:#ffcdd2,stroke:#d32f2f,stroke-width:3px,color:#000
+    classDef header fill:#e3f2fd,stroke:#0277bd,stroke-width:3px,color:#000
+    classDef type fill:#bbdefb,stroke:#0277bd,stroke-width:2px,color:#000
+    classDef flag fill:#ffe0b2,stroke:#0277bd,stroke-width:2px,color:#000
+    classDef blank fill:none,stroke:none
+    
+    class A header
+    class T1,T2 type
+    class F1,F2 flag
+    class B,C blank
             `} />
             <ul style={styles.list}>
               <li style={styles.listItem}><strong>Vessel Nodes:</strong> Each vessel is a node with all properties (name, IMO, MMSI, type, flag, dimensions, build year)</li>
@@ -467,29 +487,35 @@ graph LR
               The frontend displays the graph using vis-network library. Users can interact with the visualization in multiple ways:
             </p>
             <Mermaid chart={`
-graph TB
-    subgraph VIS["📊 Visualization Features"]
-        F["🔍 Filter<br/>Type, Flag, Name"]
-        C["👆 Click<br/>Node Details"]
-        Z["🔎 Zoom<br/>Explore"]
-    end
+graph TD
+    A["<b>VIS-NETWORK</b><br/>Interactive Visualization"]:::header
     
-    subgraph INT["User Interactions"]
-        P["Pan Graph"]
-        D["Drag Nodes"]
-        Q["Query Data"]
-    end
+    B["<b>🔍 FILTER</b><br/>Type, Flag, Name"]:::feature
+    C["<b>👆 CLICK</b><br/>View Details"]:::feature
+    D["<b>🔎 ZOOM</b><br/>Explore"]:::feature
     
-    VIS --> INT
+    E[""]
     
-    style VIS fill:#e3f2fd,stroke:#0277bd,stroke-width:2px,color:#000
-    style INT fill:#f0f4c3,stroke:#0277bd,stroke-width:2px,color:#000
-    style F fill:#fff,stroke:#0277bd,stroke-width:1px,color:#000
-    style C fill:#fff,stroke:#0277bd,stroke-width:1px,color:#000
-    style Z fill:#fff,stroke:#0277bd,stroke-width:1px,color:#000
-    style P fill:#fff,stroke:#0277bd,stroke-width:1px,color:#000
-    style D fill:#fff,stroke:#0277bd,stroke-width:1px,color:#000
-    style Q fill:#fff,stroke:#0277bd,stroke-width:1px,color:#000
+    F["<b>🖱️ PAN</b><br/>Navigate"]:::action
+    G["<b>✋ DRAG</b><br/>Reposition"]:::action
+    H["<b>⚙️ QUERY</b><br/>Search"]:::action
+    
+    A --> B
+    A --> C
+    A --> D
+    B --> E
+    C --> E
+    D --> E
+    E --> F
+    E --> G
+    E --> H
+    
+    classDef header fill:#0277bd,stroke:#0277bd,stroke-width:3px,color:#fff
+    classDef feature fill:#c8e6c9,stroke:#0277bd,stroke-width:2px,color:#000
+    classDef action fill:#fff9e6,stroke:#0277bd,stroke-width:2px,color:#000
+    classDef blank fill:none,stroke:none
+    
+    class E blank
             `} />
             <ul style={styles.list}>
               <li style={styles.listItem}><strong>Filter:</strong> Filter by vessel type, flag, name, or validation status</li>
