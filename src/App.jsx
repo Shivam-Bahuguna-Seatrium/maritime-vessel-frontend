@@ -4,6 +4,7 @@ import GraphViewer from './components/GraphViewer';
 import ChatPanel from './components/ChatPanel';
 import FilterPanel from './components/FilterPanel';
 import CaseStudy from './components/CaseStudy';
+import DebugPanel from './components/DebugPanel';
 import DEBUG from './debug';
 
 const TABS = ['Case Study', 'Dashboard', 'Knowledge Graph', 'Chat'];
@@ -14,6 +15,7 @@ const DEFAULT_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 export default function App() {
   const [tab, setTab] = useState('Case Study');
   const [graphFilters, setGraphFilters] = useState({});
+  const [debugPanelOpen, setDebugPanelOpen] = useState(false);
   const [status, setStatus] = useState({
     dataset_loaded: false,
     record_count: 0,
@@ -26,6 +28,18 @@ export default function App() {
     DEBUG.log('APP', '🚀 App initialized');
     DEBUG.log('APP', `Environment: ${window.location.hostname}:${window.location.port}`);
     DEBUG.log('APP', `API Base URL: ${DEFAULT_API_URL}`);
+  }, []);
+
+  // Handle keyboard shortcut to open debug panel (Alt+D)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.altKey || e.ctrlKey) && e.key === 'd') {
+        e.preventDefault();
+        setDebugPanelOpen(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   const refreshStatus = useCallback(async () => {
@@ -79,7 +93,7 @@ export default function App() {
         </nav>
 
         {/* Status indicators with tooltips */}
-        <div style={{ marginLeft: 'auto', display: 'flex', gap: 12, fontSize: '0.8rem', flexWrap: 'wrap', justifyContent: 'flex-end' }} className="status-indicators">
+        <div style={{ marginLeft: 'auto', display: 'flex', gap: 12, fontSize: '0.8rem', flexWrap: 'wrap', justifyContent: 'flex-end', alignItems: 'center' }} className="status-indicators">
           <span title="Number of rows in uploaded dataset">
             Dataset: {status.dataset_loaded
               ? <span className="badge valid">{status.record_count} rows</span>
@@ -95,6 +109,30 @@ export default function App() {
               ? <span className="badge valid">Built</span>
               : <span className="badge warning">Pending</span>}
           </span>
+          
+          {/* Debug button */}
+          <button
+            onClick={() => setDebugPanelOpen(!debugPanelOpen)}
+            title="Debug Panel (Ctrl+D or Alt+D)"
+            style={{
+              background: debugPanelOpen ? '#0078d4' : 'rgba(255, 255, 255, 0.1)',
+              color: '#fff',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              cursor: 'pointer',
+              padding: '4px 8px',
+              borderRadius: '3px',
+              fontSize: '0.75rem',
+              transition: 'all 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              if (!debugPanelOpen) e.currentTarget.style.background = 'rgba(0, 120, 212, 0.2)';
+            }}
+            onMouseLeave={(e) => {
+              if (!debugPanelOpen) e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+            }}
+          >
+            🔧 Debug
+          </button>
         </div>
       </header>
 
@@ -125,6 +163,9 @@ export default function App() {
           <CaseStudy />
         )}
       </main>
+
+      {/* Debug Panel */}
+      <DebugPanel isOpen={debugPanelOpen} onClose={() => setDebugPanelOpen(false)} />
     </div>
   );
 }
