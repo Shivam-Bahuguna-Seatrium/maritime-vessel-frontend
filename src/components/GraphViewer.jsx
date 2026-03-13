@@ -244,7 +244,7 @@ export default function GraphViewer({ filters, graphBuilt }) {
   }));
 
   return (
-    <div style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'column', padding: 0, overflow: 'hidden', minHeight: 0, boxSizing: 'border-box' }}>
+    <div style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'column', padding: 0, overflow: 'visible', minHeight: 0, boxSizing: 'border-box', position: 'relative' }}>
       {/* Toolbar */}
       <div style={{
         padding: '12px 16px',
@@ -312,55 +312,55 @@ export default function GraphViewer({ filters, graphBuilt }) {
         ) : (
           <div ref={containerRef} style={{ width: '100%', height: '100%' }} />
         )}
-
-        {/* Detail panel */}
-        {selected && (
-          <div className="detail-panel" style={{
-            position: 'absolute', top: 10, right: 10, width: 'clamp(280px, 90%, 300px)',
-            background: 'var(--surface)', border: '1px solid var(--border)',
-            borderRadius: 'var(--radius)', padding: 14,
-            maxHeight: 'clamp(200px, 70vh, 70%)', overflowY: 'auto', fontSize: '0.8rem',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-            zIndex: 10,
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12, alignItems: 'center' }}>
-              <strong title={`${selected.labels?.join(', ')}`} style={{ fontSize: '0.9rem', color: 'var(--text)' }}>
-                {selected.labels?.join(', ')}
-              </strong>
-              <button
-                style={{ background: 'transparent', color: 'var(--text-muted)', padding: '0 4px', cursor: 'pointer', fontSize: '1.2rem' }}
-                onClick={() => setSelected(null)}
-                title="Close details panel"
-              >✕</button>
-            </div>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <tbody>
-                {Object.entries(selected.properties || {}).map(([k, v]) => (
-                  <tr key={k} style={{ borderBottom: '1px solid var(--border)' }}>
-                    <td 
-                      style={{ 
-                        color: 'var(--text-muted)', 
-                        padding: '6px 4px', 
-                        verticalAlign: 'top',
-                        fontWeight: 600,
-                        wordBreak: 'break-word'
-                      }} 
-                      title={`Property: ${k}`}
-                    >
-                      {k}
-                    </td>
-                    <td style={{ padding: '6px 4px', wordBreak: 'break-word', color: 'var(--text)' }}>
-                      {k === 'validation_status' ? (
-                        <span className={`badge ${v === 'valid' ? 'valid' : 'invalid'}`}>{v}</span>
-                      ) : String(v).substring(0, 50)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
       </div>
+
+      {/* Detail panel - positioned outside graph container to avoid overflow clipping */}
+      {selected && (
+        <div className="detail-panel" style={{
+          position: 'fixed', bottom: 16, right: 16, width: 'clamp(280px, 90%, 350px)',
+          background: 'var(--surface)', border: '1px solid var(--border)',
+          borderRadius: 'var(--radius)', padding: 14,
+          maxHeight: 'clamp(200px, 70vh, 70%)', overflowY: 'auto', fontSize: '0.8rem',
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+          zIndex: 50,
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12, alignItems: 'center' }}>
+            <strong title={`${selected.labels?.join(', ')}`} style={{ fontSize: '0.9rem', color: 'var(--text)' }}>
+              {selected.labels?.join(', ')}
+            </strong>
+            <button
+              style={{ background: 'transparent', color: 'var(--text-muted)', padding: '0 4px', cursor: 'pointer', fontSize: '1.2rem' }}
+              onClick={() => setSelected(null)}
+              title="Close details panel"
+            >✕</button>
+          </div>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <tbody>
+              {Object.entries(selected.properties || {}).map(([k, v]) => (
+                <tr key={k} style={{ borderBottom: '1px solid var(--border)' }}>
+                  <td 
+                    style={{ 
+                      color: 'var(--text-muted)', 
+                      padding: '6px 4px', 
+                      verticalAlign: 'top',
+                      fontWeight: 600,
+                      wordBreak: 'break-word'
+                    }} 
+                    title={`Property: ${k}`}
+                  >
+                    {k}
+                  </td>
+                  <td style={{ padding: '6px 4px', wordBreak: 'break-word', color: 'var(--text)' }}>
+                    {k === 'validation_status' ? (
+                      <span className={`badge ${v === 'valid' ? 'valid' : 'invalid'}`}>{v}</span>
+                    ) : String(v).substring(0, 50)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
