@@ -175,15 +175,6 @@ export default function GraphViewer({ filters, graphBuilt }) {
     // Create or update network
     if (!networkRef.current) {
       networkRef.current = new Network(containerRef.current, { nodes: visNodes, edges: visEdges }, options);
-      networkRef.current.on('click', (params) => {
-        if (params.nodes.length > 0) {
-          const nodeId = params.nodes[0];
-          const node = graphData.nodes.find(n => n.id === nodeId);
-          setSelected(node);
-        } else {
-          setSelected(null);
-        }
-      });
       // Fit view only on initial creation to show entire graph
       networkRef.current.fit({ animation: { duration: 400 } });
       // Stop physics after stabilization to prevent continuous computation
@@ -195,6 +186,23 @@ export default function GraphViewer({ filters, graphBuilt }) {
     } else {
       networkRef.current.setData({ nodes: visNodes, edges: visEdges });
       networkRef.current.setOptions(options);
+    }
+
+    // Attach/reattach click handler with current graphData reference
+    if (networkRef.current) {
+      // Remove old listeners
+      networkRef.current.off('click');
+      
+      // Add new click handler with current data
+      networkRef.current.on('click', (params) => {
+        if (params.nodes.length > 0) {
+          const nodeId = params.nodes[0];
+          const node = graphData.nodes.find(n => n.id === nodeId);
+          setSelected(node);
+        } else {
+          setSelected(null);
+        }
+      });
     }
 
     // Handle container resize for web mode responsive layout
