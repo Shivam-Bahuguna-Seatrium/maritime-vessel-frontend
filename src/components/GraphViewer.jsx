@@ -204,7 +204,7 @@ export default function GraphViewer({ filters, graphBuilt }) {
 
   if (!graphBuilt) {
     return (
-      <div className="card" style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ height: '100%', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 0 }}>
         <p style={{ color: 'var(--text-muted)' }}>Build the knowledge graph to see the visualization.</p>
       </div>
     );
@@ -228,7 +228,7 @@ export default function GraphViewer({ filters, graphBuilt }) {
   }));
 
   return (
-    <div className="card" style={{ height: '100%', display: 'flex', flexDirection: 'column', padding: 0, overflow: 'hidden', flex: 1 }}>
+    <div style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'column', padding: 0, overflow: 'hidden', minHeight: 0, boxSizing: 'border-box' }}>
       {/* Toolbar */}
       <div style={{
         padding: '12px 16px',
@@ -276,9 +276,9 @@ export default function GraphViewer({ filters, graphBuilt }) {
       </div>
 
       {/* Graph container */}
-      <div style={{ flex: 1, position: 'relative', overflow: 'hidden', background: 'var(--background)' }}>
+      <div style={{ flex: 1, position: 'relative', overflow: 'hidden', background: 'var(--background)', minHeight: 0 }}>
         {graphData.nodes.length === 0 ? (
-          <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
+          <div style={{ height: '100%', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
             <div style={{ textAlign: 'center' }}>
               {loading ? (
                 <>
