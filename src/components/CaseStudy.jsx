@@ -310,24 +310,41 @@ const CaseStudy = () => {
       >
         <div style={styles.sectionContent}>
           <p style={styles.paragraph}>
-            I've built a system to help identify and track maritime vessels across multiple data sources. The core problem is that vessel data is messy—
-            the same ship might be listed under different names, with changing identifiers (IMO, MMSI), and inconsistent information across registries and AIS feeds.
+            I've built a **vessel identification and entity resolution system** to solve the maritime data quality problem. Ships are difficult to track because they change names, identifiers (IMO, MMSI) evolve over time, they operate across multiple registries, and data sources contradict each other. My system cleans, validates, and resolves vessel identities to create a trusted source of truth.
           </p>
 
           <div style={styles.subsection}>
-            <h4 style={styles.subsectionTitle}>What I Built:</h4>
+            <h4 style={styles.subsectionTitle}>Core Challenge (From the Case Study):</h4>
             <ul style={styles.list}>
               <li style={styles.listItem}>
-                <strong>Data Upload & Validation:</strong> CSV upload with automated validation rules for vessel identifiers, coordinates, and timestamps
+                <strong>Duplicate Records:</strong> Same vessel appears multiple times with different names, IMO numbers, or MMSI codes
               </li>
               <li style={styles.listItem}>
-                <strong>Knowledge Graph:</strong> In-memory graph structure (with Neo4j ready) to store vessels and their relationships
+                <strong>Invalid Data:</strong> Malformed IMO/MMSI, unrealistic coordinates, future timestamps, impossible dimensions
               </li>
               <li style={styles.listItem}>
-                <strong>Graph Visualization:</strong> Interactive graph viewer using vis-network to explore vessel data visually
+                <strong>Conflicting Information:</strong> One IMO maps to multiple MMSIs, or one MMSI maps to multiple IMOs
               </li>
               <li style={styles.listItem}>
-                <strong>Filter & Search:</strong> Dynamic filtering by vessel type, flag, name, and validation status
+                <strong>Evolving Attributes:</strong> Vessel names, flags, and other properties change over time
+              </li>
+            </ul>
+          </div>
+
+          <div style={styles.subsection}>
+            <h4 style={styles.subsectionTitle}>My Solution Components:</h4>
+            <ul style={styles.list}>
+              <li style={styles.listItem}>
+                <strong>Validation Engine:</strong> 8+ automated rules to detect invalid/suspicious records
+              </li>
+              <li style={styles.listItem}>
+                <strong>Entity Resolution:</strong> Knowledge graph structure to identify and link duplicate vessels
+              </li>
+              <li style={styles.listItem}>
+                <strong>Human-in-Loop Review:</strong> Invalid records flagged in red for domain expert validation
+              </li>
+              <li style={styles.listItem}>
+                <strong>Interactive Visualization:</strong> Explore the graph, see relationships, verify data quality
               </li>
             </ul>
           </div>
@@ -383,13 +400,13 @@ const CaseStudy = () => {
             <h4 style={styles.subsectionTitle}>Processing Pipeline</h4>
             <div style={{padding: '20px', background: '#f5f5f5', borderRadius: '8px', marginBottom: '16px'}}>
               <div style={{display: 'flex', justifyContent: 'space-around', alignItems: 'center', gap: '10px', flexWrap: 'wrap'}}>
-                <div style={{padding: '12px 16px', background: '#e3f2fd', border: '2px solid #0277bd', borderRadius: '6px', fontWeight: 'bold', minWidth: '100px', textAlign: 'center'}}>📤 Upload CSV</div>
-                <div style={{fontSize: '24px'}}>→</div>
-                <div style={{padding: '12px 16px', background: '#f3e5f5', border: '2px solid #0277bd', borderRadius: '6px', fontWeight: 'bold', minWidth: '100px', textAlign: 'center'}}>✅ Validate</div>
-                <div style={{fontSize: '24px'}}>→</div>
-                <div style={{padding: '12px 16px', background: '#e8f5e9', border: '2px solid #0277bd', borderRadius: '6px', fontWeight: 'bold', minWidth: '100px', textAlign: 'center'}}>🔗 Build Graph</div>
-                <div style={{fontSize: '24px'}}>→</div>
-                <div style={{padding: '12px 16px', background: '#fff3e0', border: '2px solid #0277bd', borderRadius: '6px', fontWeight: 'bold', minWidth: '100px', textAlign: 'center'}}>🔍 Explore</div>
+                <div style={{padding: '12px 16px', background: '#e3f2fd', border: '2px solid #0277bd', borderRadius: '6px', fontWeight: 700, minWidth: '100px', textAlign: 'center', color: '#000'}}>📤 Upload CSV</div>
+                <div style={{fontSize: '24px', color: '#000'}}>→</div>
+                <div style={{padding: '12px 16px', background: '#f3e5f5', border: '2px solid #0277bd', borderRadius: '6px', fontWeight: 700, minWidth: '100px', textAlign: 'center', color: '#000'}}>✅ Validate</div>
+                <div style={{fontSize: '24px', color: '#000'}}>→</div>
+                <div style={{padding: '12px 16px', background: '#e8f5e9', border: '2px solid #0277bd', borderRadius: '6px', fontWeight: 700, minWidth: '100px', textAlign: 'center', color: '#000'}}>🔗 Build Graph</div>
+                <div style={{fontSize: '24px', color: '#000'}}>→</div>
+                <div style={{padding: '12px 16px', background: '#fff3e0', border: '2px solid #0277bd', borderRadius: '6px', fontWeight: 700, minWidth: '100px', textAlign: 'center', color: '#000'}}>🔍 Explore</div>
               </div>
             </div>
           </div>
@@ -407,10 +424,10 @@ const CaseStudy = () => {
               I implemented 8+ validation rules:
             </p>
             <div style={{padding: '20px', background: '#f5f5f5', borderRadius: '8px', marginBottom: '16px'}}>
-              <div style={{textAlign: 'center', fontWeight: 'bold', marginBottom: '16px', fontSize: '16px'}}>Each Record Goes Through Checks</div>
+              <div style={{textAlign: 'center', fontWeight: 700, marginBottom: '16px', fontSize: '16px', color: '#000'}}>Each Record Goes Through Checks</div>
               <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px'}}>
-                <div style={{padding: '16px', background: '#c8e6c9', border: '2px solid #0277bd', borderRadius: '6px', textAlign: 'center', fontWeight: 'bold'}}>✓ VALID<br/>Passed all checks</div>
-                <div style={{padding: '16px', background: '#ffcdd2', border: '2px solid #d32f2f', borderRadius: '6px', textAlign: 'center', fontWeight: 'bold'}}>✗ INVALID<br/>Failed a check</div>
+                <div style={{padding: '16px', background: '#c8e6c9', border: '2px solid #0277bd', borderRadius: '6px', textAlign: 'center', fontWeight: 700, color: '#000'}}>✓ VALID<br/>Passed all checks</div>
+                <div style={{padding: '16px', background: '#ffcdd2', border: '2px solid #d32f2f', borderRadius: '6px', textAlign: 'center', fontWeight: 700, color: '#000'}}>✗ INVALID<br/>Failed a check</div>
               </div>
             </div>
             <ul style={styles.list}>
@@ -429,19 +446,19 @@ const CaseStudy = () => {
               After validation, the system builds a graph where each vessel becomes a node, connected to its type and flag information. Valid records appear in green, invalid ones in red.
             </p>
             <div style={{padding: '20px', background: '#f5f5f5', borderRadius: '8px', marginBottom: '16px'}}>
-              <div style={{textAlign: 'center', fontWeight: 'bold', marginBottom: '16px', fontSize: '16px'}}>Graph Structure: Vessels → Types → Countries</div>
+              <div style={{textAlign: 'center', fontWeight: 700, marginBottom: '16px', fontSize: '16px', color: '#000'}}>Graph Structure: Vessels → Types → Countries</div>
               <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px'}}>
                 <div>
-                  <div style={{padding: '12px', background: '#c8e6c9', border: '2px solid #0277bd', borderRadius: '6px', marginBottom: '8px', fontWeight: 'bold', textAlign: 'center'}}>VESSELS</div>
-                  <div style={{fontSize: '12px', textAlign: 'center', color: '#333'}}>✓ Valid (Green)<br/>✗ Invalid (Red)</div>
+                  <div style={{padding: '12px', background: '#c8e6c9', border: '2px solid #0277bd', borderRadius: '6px', marginBottom: '8px', fontWeight: 700, textAlign: 'center', color: '#000'}}>VESSELS</div>
+                  <div style={{fontSize: '12px', textAlign: 'center', color: '#000', fontWeight: 600}}>✓ Valid (Green)<br/>✗ Invalid (Red)</div>
                 </div>
                 <div>
-                  <div style={{padding: '12px', background: '#bbdefb', border: '2px solid #0277bd', borderRadius: '6px', marginBottom: '8px', fontWeight: 'bold', textAlign: 'center'}}>TYPES</div>
-                  <div style={{fontSize: '12px', textAlign: 'center', color: '#333'}}>Tanker<br/>Bulk Carrier</div>
+                  <div style={{padding: '12px', background: '#bbdefb', border: '2px solid #0277bd', borderRadius: '6px', marginBottom: '8px', fontWeight: 700, textAlign: 'center', color: '#000'}}>TYPES</div>
+                  <div style={{fontSize: '12px', textAlign: 'center', color: '#000', fontWeight: 600}}>Tanker<br/>Bulk Carrier</div>
                 </div>
                 <div>
-                  <div style={{padding: '12px', background: '#ffe0b2', border: '2px solid #0277bd', borderRadius: '6px', marginBottom: '8px', fontWeight: 'bold', textAlign: 'center'}}>FLAGS</div>
-                  <div style={{fontSize: '12px', textAlign: 'center', color: '#333'}}>Singapore<br/>Japan</div>
+                  <div style={{padding: '12px', background: '#ffe0b2', border: '2px solid #0277bd', borderRadius: '6px', marginBottom: '8px', fontWeight: 700, textAlign: 'center', color: '#000'}}>FLAGS</div>
+                  <div style={{fontSize: '12px', textAlign: 'center', color: '#000', fontWeight: 600}}>Singapore<br/>Japan</div>
                 </div>
               </div>
             </div>
@@ -459,19 +476,19 @@ const CaseStudy = () => {
               The frontend displays the graph using vis-network library. Users can interact with the visualization in multiple ways:
             </p>
             <div style={{padding: '20px', background: '#f5f5f5', borderRadius: '8px', marginBottom: '16px'}}>
-              <div style={{textAlign: 'center', fontWeight: 'bold', marginBottom: '16px', fontSize: '16px'}}>What You Can Do in the Graph Viewer</div>
+              <div style={{textAlign: 'center', fontWeight: 700, marginBottom: '16px', fontSize: '16px', color: '#000'}}>What You Can Do in the Graph Viewer</div>
               <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px'}}>
                 <div style={{padding: '16px', background: '#c8e6c9', border: '2px solid #0277bd', borderRadius: '6px', textAlign: 'center'}}>
-                  <div style={{fontWeight: 'bold', marginBottom: '8px'}}>🔍 FILTER</div>
-                  <div style={{fontSize: '13px'}}>Find by type, flag, or name</div>
+                  <div style={{fontWeight: 700, marginBottom: '8px', color: '#000'}}>🔍 FILTER</div>
+                  <div style={{fontSize: '13px', color: '#000', fontWeight: 600}}>Find by type, flag, or name</div>
                 </div>
                 <div style={{padding: '16px', background: '#bbdefb', border: '2px solid #0277bd', borderRadius: '6px', textAlign: 'center'}}>
-                  <div style={{fontWeight: 'bold', marginBottom: '8px'}}>👆 CLICK</div>
-                  <div style={{fontSize: '13px'}}>See vessel details</div>
+                  <div style={{fontWeight: 700, marginBottom: '8px', color: '#000'}}>👆 CLICK</div>
+                  <div style={{fontSize: '13px', color: '#000', fontWeight: 600}}>See vessel details</div>
                 </div>
                 <div style={{padding: '16px', background: '#fff9e6', border: '2px solid #0277bd', borderRadius: '6px', textAlign: 'center'}}>
-                  <div style={{fontWeight: 'bold', marginBottom: '8px'}}>🔎 ZOOM</div>
-                  <div style={{fontSize: '13px'}}>Explore the graph</div>
+                  <div style={{fontWeight: 700, marginBottom: '8px', color: '#000'}}>🔎 ZOOM</div>
+                  <div style={{fontSize: '13px', color: '#000', fontWeight: 600}}>Explore the graph</div>
                 </div>
               </div>
             </div>
@@ -549,13 +566,13 @@ const CaseStudy = () => {
             <h4 style={styles.subsectionTitle}>4-Step Workflow</h4>
             <div style={{padding: '16px', background: '#f5f5f5', borderRadius: '8px', marginBottom: '16px'}}>
               <div style={{display: 'flex', justifyContent: 'space-around', alignItems: 'center', gap: '8px', flexWrap: 'wrap'}}>
-                <div style={{padding: '10px 14px', background: '#e3f2fd', border: '2px solid #0277bd', borderRadius: '6px', fontWeight: 'bold', textAlign: 'center', flex: '1', minWidth: '80px'}}>1️⃣ Upload</div>
-                <div style={{fontSize: '20px'}}>→</div>
-                <div style={{padding: '10px 14px', background: '#e3f2fd', border: '2px solid #0277bd', borderRadius: '6px', fontWeight: 'bold', textAlign: 'center', flex: '1', minWidth: '80px'}}>2️⃣ Validate</div>
-                <div style={{fontSize: '20px'}}>→</div>
-                <div style={{padding: '10px 14px', background: '#e3f2fd', border: '2px solid #0277bd', borderRadius: '6px', fontWeight: 'bold', textAlign: 'center', flex: '1', minWidth: '80px'}}>3️⃣ Build</div>
-                <div style={{fontSize: '20px'}}>→</div>
-                <div style={{padding: '10px 14px', background: '#e3f2fd', border: '2px solid #0277bd', borderRadius: '6px', fontWeight: 'bold', textAlign: 'center', flex: '1', minWidth: '80px'}}>4️⃣ Explore</div>
+                <div style={{padding: '10px 14px', background: '#e3f2fd', border: '2px solid #0277bd', borderRadius: '6px', fontWeight: 700, textAlign: 'center', flex: '1', minWidth: '80px', color: '#000'}}>1️⃣ Upload</div>
+                <div style={{fontSize: '20px', color: '#000'}}>→</div>
+                <div style={{padding: '10px 14px', background: '#e3f2fd', border: '2px solid #0277bd', borderRadius: '6px', fontWeight: 700, textAlign: 'center', flex: '1', minWidth: '80px', color: '#000'}}>2️⃣ Validate</div>
+                <div style={{fontSize: '20px', color: '#000'}}>→</div>
+                <div style={{padding: '10px 14px', background: '#e3f2fd', border: '2px solid #0277bd', borderRadius: '6px', fontWeight: 700, textAlign: 'center', flex: '1', minWidth: '80px', color: '#000'}}>3️⃣ Build</div>
+                <div style={{fontSize: '20px', color: '#000'}}>→</div>
+                <div style={{padding: '10px 14px', background: '#e3f2fd', border: '2px solid #0277bd', borderRadius: '6px', fontWeight: 700, textAlign: 'center', flex: '1', minWidth: '80px', color: '#000'}}>4️⃣ Explore</div>
               </div>
             </div>
           </div>
@@ -648,49 +665,124 @@ const CaseStudy = () => {
       <SectionRenderer id="architecture" title="System Architecture">
         <div style={styles.sectionContent}>
           <p style={styles.paragraph}>
-            My system separates concerns between frontend and backend, with each handling specific responsibilities:
+            This is the vessel identification pipeline I built. Each step transforms raw maritime data into a queryable, validated knowledge graph that humans can trust.
           </p>
 
           <div style={styles.subsection}>
-            <h4 style={styles.subsectionTitle}>System Architecture</h4>
-            <div style={{padding: '16px', background: '#f5f5f5', borderRadius: '8px', marginBottom: '16px'}}>
-              <div style={{display: 'grid', gridTemplateColumns: '1fr auto 1fr auto 1fr', alignItems: 'center', gap: '8px'}}>
-                <div style={{padding: '12px', background: '#e3f2fd', border: '2px solid #0277bd', borderRadius: '6px', textAlign: 'center', fontWeight: '600'}}>
-                  🖥️ Frontend<br/><span style={{fontSize: '11px', fontWeight: 'normal'}}>React + Vite</span>
+            <h4 style={styles.subsectionTitle}>Complete Data Processing Pipeline</h4>
+            <div style={{padding: '24px', background: '#f5f5f5', borderRadius: '8px', marginBottom: '20px'}}>
+              {/* Pipeline Stage 1: Raw Records */}
+              <div style={{marginBottom: '20px'}}>
+                <div style={{padding: '16px', background: '#f0f0f0', border: '3px solid #0277bd', borderRadius: '8px', textAlign: 'center', marginBottom: '12px'}}>
+                  <div style={{fontWeight: 700, fontSize: '16px', color: '#000', marginBottom: '6px'}}>📥 Raw Vessel Records</div>
+                  <div style={{fontSize: '13px', color: '#000', fontWeight: 600}}>CSV with IMO, MMSI, Names, Flags, Dimensions</div>
                 </div>
-                <div style={{textAlign: 'center', fontSize: '16px'}}>→</div>
-                <div style={{padding: '12px', background: '#fff9e6', border: '2px solid #0277bd', borderRadius: '6px', textAlign: 'center', fontWeight: '600'}}>
-                  🔗 API<br/><span style={{fontSize: '11px', fontWeight: 'normal'}}>HTTP Routes</span>
+              </div>
+
+              {/* Arrow */}
+              <div style={{textAlign: 'center', fontSize: '28px', color: '#0277bd', marginBottom: '20px'}}>⬇️</div>
+
+              {/* Pipeline Stage 2: EDA */}
+              <div style={{marginBottom: '20px'}}>
+                <div style={{padding: '16px', background: '#e3f2fd', border: '3px solid #0277bd', borderRadius: '8px', textAlign: 'center', marginBottom: '12px'}}>
+                  <div style={{fontWeight: 700, fontSize: '16px', color: '#000', marginBottom: '6px'}}>🔍 EDA Analysis</div>
+                  <div style={{fontSize: '13px', color: '#000', fontWeight: 600}}>Explore data distribution, spot patterns, identify potential issues</div>
                 </div>
-                <div style={{textAlign: 'center', fontSize: '16px'}}>→</div>
-                <div style={{padding: '12px', background: '#e8f5e9', border: '2px solid #0277bd', borderRadius: '6px', textAlign: 'center', fontWeight: '600'}}>
-                  ⚙️ Backend<br/><span style={{fontSize: '11px', fontWeight: 'normal'}}>FastAPI Logic</span>
+              </div>
+
+              {/* Arrow */}
+              <div style={{textAlign: 'center', fontSize: '28px', color: '#0277bd', marginBottom: '20px'}}>⬇️</div>
+
+              {/* Pipeline Stage 3: Validation */}
+              <div style={{marginBottom: '20px'}}>
+                <div style={{padding: '16px', background: '#fff3e0', border: '3px solid #0277bd', borderRadius: '8px', marginBottom: '12px'}}>
+                  <div style={{fontWeight: 700, fontSize: '16px', color: '#000', marginBottom: '12px', textAlign: 'center'}}>✅ Validation Pipeline</div>
+                  <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px'}}>
+                    <div style={{padding: '12px', background: '#c8e6c9', border: '2px solid #0277bd', borderRadius: '6px', textAlign: 'center'}}>
+                      <div style={{fontWeight: 700, color: '#000'}}>✓ VALID</div>
+                      <div style={{fontSize: '12px', color: '#000', fontWeight: 600}}>Passed all 8 validation rules</div>
+                    </div>
+                    <div style={{padding: '12px', background: '#ffcdd2', border: '2px solid #d32f2f', borderRadius: '6px', textAlign: 'center'}}>
+                      <div style={{fontWeight: 700, color: '#000'}}>✗ INVALID</div>
+                      <div style={{fontSize: '12px', color: '#000', fontWeight: 600}}>Failed format, logic, or conflict checks</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Arrow */}
+              <div style={{textAlign: 'center', fontSize: '28px', color: '#0277bd', marginBottom: '20px'}}>⬇️</div>
+
+              {/* Pipeline Stage 4: Knowledge Graph + Human Review */}
+              <div style={{marginBottom: '20px'}}>
+                <div style={{padding: '16px', background: '#e8f5e9', border: '3px solid #0277bd', borderRadius: '8px', marginBottom: '12px'}}>
+                  <div style={{fontWeight: 700, fontSize: '16px', color: '#000', marginBottom: '12px', textAlign: 'center'}}>🔗 Knowledge Graph Construction</div>
+                  <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px'}}>
+                    <div>
+                      <div style={{padding: '12px', background: '#c8e6c9', border: '2px solid #0277bd', borderRadius: '6px', textAlign: 'center', marginBottom: '12px'}}>
+                        <div style={{fontWeight: 700, color: '#000'}}>🟢 Valid Records</div>
+                        <div style={{fontSize: '12px', color: '#000', fontWeight: 600}}>Green nodes in graph</div>
+                      </div>
+                      <div style={{fontSize: '12px', color: '#000', fontWeight: 600, textAlign: 'center'}}>Immediately trustworthy</div>
+                    </div>
+                    <div>
+                      <div style={{padding: '12px', background: '#ffcdd2', border: '2px solid #d32f2f', borderRadius: '6px', textAlign: 'center', marginBottom: '12px'}}>
+                        <div style={{fontWeight: 700, color: '#000'}}>🔴 Invalid Records</div>
+                        <div style={{fontSize: '12px', color: '#000', fontWeight: 600}}>Red nodes in graph</div>
+                      </div>
+                      <div style={{fontSize: '12px', color: '#000', fontWeight: 600, textAlign: 'center'}}>Needs human review</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Arrow */}
+              <div style={{textAlign: 'center', fontSize: '28px', color: '#0277bd', marginBottom: '20px'}}>⬇️</div>
+
+              {/* Pipeline Stage 5: Human-in-Loop */}
+              <div style={{marginBottom: '20px'}}>
+                <div style={{padding: '16px', background: '#f3e5f5', border: '3px solid #0277bd', borderRadius: '8px', textAlign: 'center', marginBottom: '12px'}}>
+                  <div style={{fontWeight: 700, fontSize: '16px', color: '#000', marginBottom: '6px'}}>👥 Human Review (in-loop)</div>
+                  <div style={{fontSize: '13px', color: '#000', fontWeight: 600}}>Domain experts validate flagged records, resolve conflicts, correct data entry errors</div>
+                </div>
+              </div>
+
+              {/* Arrow */}
+              <div style={{textAlign: 'center', fontSize: '28px', color: '#0277bd', marginBottom: '20px'}}>⬇️</div>
+
+              {/* Pipeline Stage 6: Ground Truth */}
+              <div style={{marginBottom: '0'}}>
+                <div style={{padding: '16px', background: '#e1f5fe', border: '3px solid #01579b', borderRadius: '8px', textAlign: 'center'}}>
+                  <div style={{fontWeight: 700, fontSize: '16px', color: '#000', marginBottom: '6px'}}>✨ Queryable Ground Truth</div>
+                  <div style={{fontSize: '13px', color: '#000', fontWeight: 600}}>Clean, validated vessel database ready for search, filtering, and AI-powered queries</div>
                 </div>
               </div>
             </div>
           </div>
 
           <div style={styles.subsection}>
-            <h4 style={styles.subsectionTitle}>Backend Flow</h4>
-            <p style={styles.paragraph}>
-              User uploads CSV → Parser reads data → Validation pipeline checks each record → Knowledge graph builder constructs relationships → Data stored in memory/graph
-            </p>
-          </div>
-
-          <div style={styles.subsection}>
-            <h4 style={styles.subsectionTitle}>Frontend Flow</h4>
-            <p style={styles.paragraph}>
-              React components manage state → User clicks buttons → API calls to backend → Graph data returned → vis-network renders visualization
-            </p>
+            <h4 style={styles.subsectionTitle}>Validation Rules (8 Rules Total)</h4>
+            <ul style={styles.list}>
+              <li style={styles.listItem}><strong>IMO Format:</strong> Must be exactly 7 digits</li>
+              <li style={styles.listItem}><strong>MMSI Format:</strong> Must be exactly 9 digits</li>
+              <li style={styles.listItem}><strong>Coordinates:</strong> Latitude (-90 to +90), Longitude (-180 to +180)</li>
+              <li style={styles.listItem}><strong>Dimensions:</strong> Length, breadth, draught within realistic ranges</li>
+              <li style={styles.listItem}><strong>Build Year:</strong> Between 1800 and current year</li>
+              <li style={styles.listItem}><strong>Timestamps:</strong> Not in the future</li>
+              <li style={styles.listItem}><strong>Uniqueness:</strong> Flag duplicate IMO/MMSI conflicts</li>
+              <li style={styles.listItem}><strong>Logic Checks:</strong> Draught ≤ Draft + Ballast, other cross-field validations</li>
+            </ul>
           </div>
 
           <div style={styles.subsection}>
             <h4 style={styles.subsectionTitle}>Why This Architecture</h4>
             <ul style={styles.list}>
-              <li style={styles.listItem}><strong>Separation of concerns:</strong> Backend handles data, frontend handles UI</li>
-              <li style={styles.listItem}><strong>Scalability:</strong> Easy to add Neo4j later without affecting frontend</li>
-              <li style={styles.listItem}><strong>Testability:</strong> API endpoints can be tested independently</li>
-              <li style={styles.listItem}><strong>Independent deployment:</strong> Two separate repos for clean versioning</li>
+              <li style={styles.listItem}><strong>Data Quality First:</strong> Validate before building the graph - garbage in, garbage out</li>
+              <li style={styles.listItem}><strong>Visual Red Flags:</strong> Invalid records shown in red so humans know what to review</li>
+              <li style={styles.listItem}><strong>Human-in-Loop:</strong> Domain experts catch edge cases that automated rules miss</li>
+              <li style={styles.listItem}><strong>Trust & Confidence:</strong> Only after human approval do records become ground truth</li>
+              <li style={styles.listItem}><strong>Separation of Concerns:</strong> Frontend handles UI, backend handles data logic</li>
+              <li style={styles.listItem}><strong>Neo4j Ready:</strong> Current in-memory implementation can swap to Neo4j without code changes</li>
             </ul>
           </div>
         </div>
