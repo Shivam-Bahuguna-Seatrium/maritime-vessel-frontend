@@ -4,6 +4,18 @@ import Mermaid from './Mermaid';
 const CaseStudy = () => {
   const [expandedSection, setExpandedSection] = useState('introduction');
 
+  // Scroll to section when it expands
+  useEffect(() => {
+    if (expandedSection) {
+      const element = document.getElementById(`section-${expandedSection}`);
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 0);
+      }
+    }
+  }, [expandedSection]);
+
   const styles = {
     container: {
       maxWidth: '1200px',
@@ -240,7 +252,7 @@ const CaseStudy = () => {
   const SectionRenderer = ({ id, title, children }) => {
     const isExpanded = expandedSection === id;
     return (
-      <div style={styles.section}>
+      <div style={styles.section} id={`section-${id}`}>
         <div
           style={{
             ...styles.sectionHeader,

@@ -12,7 +12,7 @@ const TABS = ['Case Study', 'Dashboard', 'Knowledge Graph', 'Chat'];
 const DEFAULT_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 export default function App() {
-  const [tab, setTab] = useState('Dashboard');
+  const [tab, setTab] = useState('Case Study');
   const [graphFilters, setGraphFilters] = useState({});
   const [status, setStatus] = useState({
     dataset_loaded: false,
