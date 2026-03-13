@@ -112,9 +112,10 @@ const CaseStudy = () => {
     },
     paragraph: {
       lineHeight: '1.6',
-      marginBottom: '12px',
+      marginBottom: '16px',
       color: 'var(--text)',
-      fontWeight: 500,
+      fontWeight: 600,
+      letterSpacing: '0.3px',
       fontSize: 'clamp(0.85rem, 2.5vw, 0.95rem)',
     },
     list: {
@@ -122,10 +123,11 @@ const CaseStudy = () => {
       marginBottom: '16px',
     },
     listItem: {
-      marginBottom: '8px',
-      lineHeight: '1.6',
+      marginBottom: '12px',
+      lineHeight: '1.7',
       color: 'var(--text)',
       fontWeight: 500,
+      letterSpacing: '0.2px',
       fontSize: 'clamp(0.85rem, 2.5vw, 0.95rem)',
     },
     codeBlock: {
@@ -428,29 +430,13 @@ graph TD
           <div style={styles.subsection}>
             <h4 style={styles.subsectionTitle}>3. Knowledge Graph Building</h4>
             <p style={styles.paragraph}>
-              After validation, the system builds a graph where:
+              After validation, the system builds a graph where each vessel becomes a node, connected to its type and flag information. Valid records appear in green, invalid ones in red.
             </p>
-            <Mermaid chart={`
-graph LR
-    A["📊 Build Graph"]
-    B["🚢 Vessel<br/>Nodes"]
-    C["⚓ Type<br/>Relationships"]
-    D["🌍 Flag<br/>Connections"]
-    
-    A --> B
-    B --> C
-    C --> D
-    
-    style A stroke:#0277bd,stroke-width:2px
-    style B stroke:#0277bd,stroke-width:2px
-    style C stroke:#0277bd,stroke-width:2px
-    style D stroke:#0277bd,stroke-width:2px
-            `} />
             <ul style={styles.list}>
-              <li style={styles.listItem}>Each vessel is a node with properties (name, IMO, MMSI, type, flag, etc.)</li>
-              <li style={styles.listItem}>Relationships connect vessels to their type, flag state, and other attributes</li>
-              <li style={styles.listItem}>Invalid records are marked with red nodes, valid ones with green</li>
-              <li style={styles.listItem}>The graph can be queried and explored visually</li>
+              <li style={styles.listItem}><strong>Vessel Nodes:</strong> Each vessel is a node with all properties (name, IMO, MMSI, type, flag, dimensions, build year)</li>
+              <li style={styles.listItem}><strong>Relationships:</strong> Nodes connect to their type (Tanker, Bulk Carrier, etc.) and flag state (Singapore, Japan, etc.)</li>
+              <li style={styles.listItem}><strong>Valid/Invalid Marking:</strong> Green nodes for valid records, red nodes for records that failed validation</li>
+              <li style={styles.listItem}><strong>Queryable Graph:</strong> The entire structure can be explored, filtered, and searched visually</li>
             </ul>
           </div>
 
