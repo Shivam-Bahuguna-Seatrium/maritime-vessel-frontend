@@ -381,17 +381,17 @@ const CaseStudy = () => {
 
           <div style={styles.subsection}>
             <h4 style={styles.subsectionTitle}>Processing Pipeline</h4>
-            <Mermaid chart={`
-graph LR
-    A["📤 Upload"] --> B["✅ Validate"]
-    B --> C["🔗 Build"]
-    C --> D["🔍 Explore"]
-    
-    style A stroke:#0277bd,stroke-width:2px,fill:#e3f2fd
-    style B stroke:#0277bd,stroke-width:2px,fill:#e3f2fd
-    style C stroke:#0277bd,stroke-width:2px,fill:#e3f2fd
-    style D stroke:#0277bd,stroke-width:2px,fill:#e3f2fd
-            `} />
+            <div style={{padding: '20px', background: '#f5f5f5', borderRadius: '8px', marginBottom: '16px'}}>
+              <div style={{display: 'flex', justifyContent: 'space-around', alignItems: 'center', gap: '10px', flexWrap: 'wrap'}}>
+                <div style={{padding: '12px 16px', background: '#e3f2fd', border: '2px solid #0277bd', borderRadius: '6px', fontWeight: 'bold', minWidth: '100px', textAlign: 'center'}}>📤 Upload CSV</div>
+                <div style={{fontSize: '24px'}}>→</div>
+                <div style={{padding: '12px 16px', background: '#f3e5f5', border: '2px solid #0277bd', borderRadius: '6px', fontWeight: 'bold', minWidth: '100px', textAlign: 'center'}}>✅ Validate</div>
+                <div style={{fontSize: '24px'}}>→</div>
+                <div style={{padding: '12px 16px', background: '#e8f5e9', border: '2px solid #0277bd', borderRadius: '6px', fontWeight: 'bold', minWidth: '100px', textAlign: 'center'}}>🔗 Build Graph</div>
+                <div style={{fontSize: '24px'}}>→</div>
+                <div style={{padding: '12px 16px', background: '#fff3e0', border: '2px solid #0277bd', borderRadius: '6px', fontWeight: 'bold', minWidth: '100px', textAlign: 'center'}}>🔍 Explore</div>
+              </div>
+            </div>
           </div>
 
           <div style={styles.subsection}>
@@ -406,17 +406,13 @@ graph LR
             <p style={styles.paragraph}>
               I implemented 8+ validation rules:
             </p>
-            <Mermaid chart={`
-graph TD
-    A["Record"] --> B{Valid?}
-    B -->|✓ Yes| C["Valid"]
-    B -->|✗ No| D["Invalid"]
-    
-    style A stroke:#0277bd,stroke-width:2px,fill:#e3f2fd
-    style B stroke:#0277bd,stroke-width:2px,fill:#fff9e6
-    style C stroke:#0277bd,stroke-width:2px,fill:#c8e6c9
-    style D stroke:#0277bd,stroke-width:2px,fill:#ffcdd2
-            `} />
+            <div style={{padding: '20px', background: '#f5f5f5', borderRadius: '8px', marginBottom: '16px'}}>
+              <div style={{textAlign: 'center', fontWeight: 'bold', marginBottom: '16px', fontSize: '16px'}}>Each Record Goes Through Checks</div>
+              <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px'}}>
+                <div style={{padding: '16px', background: '#c8e6c9', border: '2px solid #0277bd', borderRadius: '6px', textAlign: 'center', fontWeight: 'bold'}}>✓ VALID<br/>Passed all checks</div>
+                <div style={{padding: '16px', background: '#ffcdd2', border: '2px solid #d32f2f', borderRadius: '6px', textAlign: 'center', fontWeight: 'bold'}}>✗ INVALID<br/>Failed a check</div>
+              </div>
+            </div>
             <ul style={styles.list}>
               <li style={styles.listItem}>IMO number format (must be 7 digits)</li>
               <li style={styles.listItem}>MMSI number format (must be 9 digits)</li>
@@ -432,32 +428,23 @@ graph TD
             <p style={styles.paragraph}>
               After validation, the system builds a graph where each vessel becomes a node, connected to its type and flag information. Valid records appear in green, invalid ones in red.
             </p>
-            <Mermaid chart={`
-graph TD
-    A["Vessel 1<br/>Valid"]
-    B["Vessel 2<br/>Valid"]
-    C["Vessel 3<br/>Invalid"]
-    
-    T1["Type:<br/>Tanker"]
-    T2["Type:<br/>Bulk Carrier"]
-    
-    F1["Flag:<br/>Singapore"]
-    F2["Flag:<br/>Japan"]
-    
-    A --> T1
-    A --> F1
-    B --> T2
-    B --> F2
-    C --> T1
-    
-    style A fill:#c8e6c9,stroke:#0277bd,stroke-width:2px,color:#000
-    style B fill:#c8e6c9,stroke:#0277bd,stroke-width:2px,color:#000
-    style C fill:#ffcdd2,stroke:#d32f2f,stroke-width:2px,color:#000
-    style T1 fill:#bbdefb,stroke:#0277bd,stroke-width:2px,color:#000
-    style T2 fill:#bbdefb,stroke:#0277bd,stroke-width:2px,color:#000
-    style F1 fill:#ffe0b2,stroke:#0277bd,stroke-width:2px,color:#000
-    style F2 fill:#ffe0b2,stroke:#0277bd,stroke-width:2px,color:#000
-            `} />
+            <div style={{padding: '20px', background: '#f5f5f5', borderRadius: '8px', marginBottom: '16px'}}>
+              <div style={{textAlign: 'center', fontWeight: 'bold', marginBottom: '16px', fontSize: '16px'}}>Graph Structure: Vessels → Types → Countries</div>
+              <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px'}}>
+                <div>
+                  <div style={{padding: '12px', background: '#c8e6c9', border: '2px solid #0277bd', borderRadius: '6px', marginBottom: '8px', fontWeight: 'bold', textAlign: 'center'}}>VESSELS</div>
+                  <div style={{fontSize: '12px', textAlign: 'center', color: '#333'}}>✓ Valid (Green)<br/>✗ Invalid (Red)</div>
+                </div>
+                <div>
+                  <div style={{padding: '12px', background: '#bbdefb', border: '2px solid #0277bd', borderRadius: '6px', marginBottom: '8px', fontWeight: 'bold', textAlign: 'center'}}>TYPES</div>
+                  <div style={{fontSize: '12px', textAlign: 'center', color: '#333'}}>Tanker<br/>Bulk Carrier</div>
+                </div>
+                <div>
+                  <div style={{padding: '12px', background: '#ffe0b2', border: '2px solid #0277bd', borderRadius: '6px', marginBottom: '8px', fontWeight: 'bold', textAlign: 'center'}}>FLAGS</div>
+                  <div style={{fontSize: '12px', textAlign: 'center', color: '#333'}}>Singapore<br/>Japan</div>
+                </div>
+              </div>
+            </div>
             <ul style={styles.list}>
               <li style={styles.listItem}><strong>Vessel Nodes:</strong> Each vessel is a node with all properties (name, IMO, MMSI, type, flag, dimensions, build year)</li>
               <li style={styles.listItem}><strong>Relationships:</strong> Nodes connect to their type (Tanker, Bulk Carrier, etc.) and flag state (Singapore, Japan, etc.)</li>
@@ -471,34 +458,23 @@ graph TD
             <p style={styles.paragraph}>
               The frontend displays the graph using vis-network library. Users can interact with the visualization in multiple ways:
             </p>
-            <Mermaid chart={`
-graph TD
-    A["VIS-NETWORK<br/>Graph Viewer"]
-    
-    B["Filter Data"]
-    C["Click Nodes"]
-    D["Zoom In/Out"]
-    
-    E["Pan Graph"]
-    F["Drag Nodes"]
-    G["Search Data"]
-    
-    A --> B
-    A --> C
-    A --> D
-    
-    B --> E
-    C --> F
-    D --> G
-    
-    style A fill:#0277bd,stroke:#0277bd,stroke-width:2px,color:#fff
-    style B fill:#c8e6c9,stroke:#0277bd,stroke-width:2px,color:#000
-    style C fill:#c8e6c9,stroke:#0277bd,stroke-width:2px,color:#000
-    style D fill:#c8e6c9,stroke:#0277bd,stroke-width:2px,color:#000
-    style E fill:#fff9e6,stroke:#0277bd,stroke-width:2px,color:#000
-    style F fill:#fff9e6,stroke:#0277bd,stroke-width:2px,color:#000
-    style G fill:#fff9e6,stroke:#0277bd,stroke-width:2px,color:#000
-            `} />
+            <div style={{padding: '20px', background: '#f5f5f5', borderRadius: '8px', marginBottom: '16px'}}>
+              <div style={{textAlign: 'center', fontWeight: 'bold', marginBottom: '16px', fontSize: '16px'}}>What You Can Do in the Graph Viewer</div>
+              <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px'}}>
+                <div style={{padding: '16px', background: '#c8e6c9', border: '2px solid #0277bd', borderRadius: '6px', textAlign: 'center'}}>
+                  <div style={{fontWeight: 'bold', marginBottom: '8px'}}>🔍 FILTER</div>
+                  <div style={{fontSize: '13px'}}>Find by type, flag, or name</div>
+                </div>
+                <div style={{padding: '16px', background: '#bbdefb', border: '2px solid #0277bd', borderRadius: '6px', textAlign: 'center'}}>
+                  <div style={{fontWeight: 'bold', marginBottom: '8px'}}>👆 CLICK</div>
+                  <div style={{fontSize: '13px'}}>See vessel details</div>
+                </div>
+                <div style={{padding: '16px', background: '#fff9e6', border: '2px solid #0277bd', borderRadius: '6px', textAlign: 'center'}}>
+                  <div style={{fontWeight: 'bold', marginBottom: '8px'}}>🔎 ZOOM</div>
+                  <div style={{fontSize: '13px'}}>Explore the graph</div>
+                </div>
+              </div>
+            </div>
             <ul style={styles.list}>
               <li style={styles.listItem}><strong>Filter:</strong> Filter by vessel type, flag, name, or validation status</li>
               <li style={styles.listItem}><strong>Click for Details:</strong> Click nodes to see all detailed properties</li>
@@ -571,17 +547,17 @@ graph TD
 
           <div style={styles.subsection}>
             <h4 style={styles.subsectionTitle}>4-Step Workflow</h4>
-            <Mermaid chart={`
-graph LR
-    A["1️⃣ Upload"] --> B["2️⃣ Validate"]
-    B --> C["3️⃣ Build"]
-    C --> D["4️⃣ Explore"]
-    
-    style A stroke:#0277bd,stroke-width:2px,fill:#e3f2fd
-    style B stroke:#0277bd,stroke-width:2px,fill:#e3f2fd
-    style C stroke:#0277bd,stroke-width:2px,fill:#e3f2fd
-    style D stroke:#0277bd,stroke-width:2px,fill:#e3f2fd
-            `} />
+            <div style={{padding: '16px', background: '#f5f5f5', borderRadius: '8px', marginBottom: '16px'}}>
+              <div style={{display: 'flex', justifyContent: 'space-around', alignItems: 'center', gap: '8px', flexWrap: 'wrap'}}>
+                <div style={{padding: '10px 14px', background: '#e3f2fd', border: '2px solid #0277bd', borderRadius: '6px', fontWeight: 'bold', textAlign: 'center', flex: '1', minWidth: '80px'}}>1️⃣ Upload</div>
+                <div style={{fontSize: '20px'}}>→</div>
+                <div style={{padding: '10px 14px', background: '#e3f2fd', border: '2px solid #0277bd', borderRadius: '6px', fontWeight: 'bold', textAlign: 'center', flex: '1', minWidth: '80px'}}>2️⃣ Validate</div>
+                <div style={{fontSize: '20px'}}>→</div>
+                <div style={{padding: '10px 14px', background: '#e3f2fd', border: '2px solid #0277bd', borderRadius: '6px', fontWeight: 'bold', textAlign: 'center', flex: '1', minWidth: '80px'}}>3️⃣ Build</div>
+                <div style={{fontSize: '20px'}}>→</div>
+                <div style={{padding: '10px 14px', background: '#e3f2fd', border: '2px solid #0277bd', borderRadius: '6px', fontWeight: 'bold', textAlign: 'center', flex: '1', minWidth: '80px'}}>4️⃣ Explore</div>
+              </div>
+            </div>
           </div>
 
           <div style={styles.subsection}>
@@ -677,21 +653,21 @@ graph LR
 
           <div style={styles.subsection}>
             <h4 style={styles.subsectionTitle}>System Architecture</h4>
-            <Mermaid chart={`
-graph LR
-    UI["Frontend"]
-    API["API Gateway"]
-    LOGIC["Backend Logic"]
-    
-    UI -->|HTTP| API
-    API -->|Routes| LOGIC
-    LOGIC -->|Data| API
-    API -->|Response| UI
-    
-    style UI stroke:#0277bd,stroke-width:2px,fill:#e3f2fd
-    style API stroke:#0277bd,stroke-width:2px,fill:#fff9e6
-    style LOGIC stroke:#0277bd,stroke-width:2px,fill:#e8f5e9
-            `} />
+            <div style={{padding: '16px', background: '#f5f5f5', borderRadius: '8px', marginBottom: '16px'}}>
+              <div style={{display: 'grid', gridTemplateColumns: '1fr auto 1fr auto 1fr', alignItems: 'center', gap: '8px'}}>
+                <div style={{padding: '12px', background: '#e3f2fd', border: '2px solid #0277bd', borderRadius: '6px', textAlign: 'center', fontWeight: '600'}}>
+                  🖥️ Frontend<br/><span style={{fontSize: '11px', fontWeight: 'normal'}}>React + Vite</span>
+                </div>
+                <div style={{textAlign: 'center', fontSize: '16px'}}>→</div>
+                <div style={{padding: '12px', background: '#fff9e6', border: '2px solid #0277bd', borderRadius: '6px', textAlign: 'center', fontWeight: '600'}}>
+                  🔗 API<br/><span style={{fontSize: '11px', fontWeight: 'normal'}}>HTTP Routes</span>
+                </div>
+                <div style={{textAlign: 'center', fontSize: '16px'}}>→</div>
+                <div style={{padding: '12px', background: '#e8f5e9', border: '2px solid #0277bd', borderRadius: '6px', textAlign: 'center', fontWeight: '600'}}>
+                  ⚙️ Backend<br/><span style={{fontSize: '11px', fontWeight: 'normal'}}>FastAPI Logic</span>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div style={styles.subsection}>
