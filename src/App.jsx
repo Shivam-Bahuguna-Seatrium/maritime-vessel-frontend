@@ -46,7 +46,7 @@ export default function App() {
   }, []);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw', overflow: 'hidden' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw', overflow: 'hidden', position: 'relative' }}>
       {/* ---- Header (Fixed at top) ---- */}
       <header>
         <h1>
@@ -99,13 +99,13 @@ export default function App() {
       </header>
 
       {/* ---- Body ---- */}
-      <main style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+      <main style={{ flex: 1, overflow: 'auto', overflowX: 'hidden' }}>
         {tab === 'Dashboard' && (
           <Dashboard status={status} refreshStatus={refreshStatus} />
         )}
 
         {tab === 'Knowledge Graph' && (
-          <div style={{ display: 'flex', gap: 16, flex: 1, minHeight: 0, overflow: 'hidden' }} className="kg-layout">
+          <div style={{ display: 'flex', gap: 16, height: '100%' }} className="kg-layout">
             <FilterPanel
               graphBuilt={status.graph_built}
               filters={graphFilters}

@@ -281,7 +281,7 @@ export default function GraphViewer({ filters, graphBuilt }) {
               style={{ padding: '4px 8px', fontSize: '0.75rem', background: 'var(--surface)', color: 'var(--text)', border: '1px solid var(--border)', borderRadius: '4px' }}
               title="Choose how many vessels to visualize at once"
             >
-              <option value="20">20</option>
+              <option value="10">20</option>
               <option value="40">40</option>
               <option value="100">100</option>
               <option value="500">500</option>
