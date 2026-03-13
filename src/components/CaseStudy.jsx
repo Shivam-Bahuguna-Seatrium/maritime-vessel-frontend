@@ -402,10 +402,10 @@ const CaseStudy = () => {
               After validation, the system builds a graph where:
             </p>
             <ul style={styles.list}>
-              <li style={styles.listItem}}>Each vessel is a node with properties (name, IMO, MMSI, type, flag, etc.)</li>
-              <li style={styles.listItem}}>Relationships connect vessels to their type, flag state, and other attributes</li>
-              <li style={styles.listItem}}>Invalid records are marked with red nodes, valid ones with green</li>
-              <li style={styles.listItem}}>The graph can be queried and explored visually</li>
+              <li style={styles.listItem}>Each vessel is a node with properties (name, IMO, MMSI, type, flag, etc.)</li>
+              <li style={styles.listItem}>Relationships connect vessels to their type, flag state, and other attributes</li>
+              <li style={styles.listItem}>Invalid records are marked with red nodes, valid ones with green</li>
+              <li style={styles.listItem}>The graph can be queried and explored visually</li>
             </ul>
           </div>
 
@@ -415,9 +415,9 @@ const CaseStudy = () => {
               The frontend displays the graph using vis-network library. Users can:
             </p>
             <ul style={styles.list}>
-              <li style={styles.listItem'}>Filter by vessel type, flag, name, or validation status</li>
-              <li style={styles.listItem'}>Click nodes to see detailed properties</li>
-              <li style={styles.listItem'}>Zoom, pan, and explore the graph</li>
+              <li style={styles.listItem}>Filter by vessel type, flag, name, or validation status</li>
+              <li style={styles.listItem}>Click nodes to see detailed properties</li>
+              <li style={styles.listItem}>Zoom, pan, and explore the graph</li>
             </ul>
           </div>
         </div>
@@ -524,7 +524,7 @@ const CaseStudy = () => {
       {/* Implementation Stack Section */}
       <SectionRenderer id="instructions" title="Implementation Stack">
         <div style={styles.sectionContent}>
-          <int style={styles.subsection}>
+          <div style={styles.subsection}>
             <h4 style={styles.subsectionTitle}>Tech Stack Components</h4>
             <ul style={styles.list}>
               <li style={styles.listItem}>
@@ -560,7 +560,7 @@ const CaseStudy = () => {
               <li style={styles.listItem}><code>POST /api/upload</code> - Upload CSV file</li>
               <li style={styles.listItem}><code>POST /api/validate</code> - Run validation pipeline</li>
               <li style={styles.listItem}><code>POST /api/build-graph</code> - Build knowledge graph</li>
-              <li style={styles.listItem'><code>GET /api/kg/data</code> - Fetch graph data with filters</li>
+              <li style={styles.listItem}><code>GET /api/kg/data</code> - Fetch graph data with filters</li>
               <li style={styles.listItem}><code>GET /api/kg/filters</code> - Get available filter options</li>
               <li style={styles.listItem}><code>GET /api/status</code> - Check current system state</li>
             </ul>
