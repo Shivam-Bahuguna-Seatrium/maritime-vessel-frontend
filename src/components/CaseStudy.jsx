@@ -896,7 +896,7 @@ class RAGGuard:
             <div style={styles.highlightTitle}>🎯 Success Metrics</div>
             <ul style={styles.list}>
               <li style={styles.listItem}>System correctly processes and disambiguates vessel data with measurable accuracy</li>
-              <li style={styles.listItem}>Entity matching algorithm achieves >85% accuracy on test cases</li>
+              <li style={styles.listItem}>Entity matching algorithm achieves &gt;85% accuracy on test cases</li>
               <li style={styles.listItem}>Natural language interface allows intuitive query construction and response generation</li>
               <li style={styles.listItem}>All LLM responses are grounded in verified database results</li>
               <li style={styles.listItem}>Query caching provides significant performance improvement for repeated queries</li>
@@ -912,6 +912,7 @@ class RAGGuard:
               technology domains to solve a cohesive real-world problem. The evaluation emphasizes not only functional correctness 
               but also the clarity of technical reasoning, architectural decision-making, and the ability to build systems that 
               are both theoretically sound and practically operational.
+            </p>
           </div>
         </div>
       </SectionRenderer>
