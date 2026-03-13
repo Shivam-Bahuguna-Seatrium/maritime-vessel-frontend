@@ -226,6 +226,11 @@ const CaseStudy = () => {
       label: 'Future Roadmap',
       icon: '🚀',
     },
+    {
+      id: 'tryitout',
+      label: 'Try It Yourself',
+      icon: '🎮',
+    },
   ];
 
   const toggleSection = (id) => {
@@ -893,6 +898,155 @@ const CaseStudy = () => {
             <p style={styles.paragraph}>
               The system is deployed and working locally. Next priorities: get Neo4j connected, add the chat interface, and stress-test with real maritime datasets.
             </p>
+          </div>
+        </div>
+      </SectionRenderer>
+
+      {/* Try It Out Section */}
+      <SectionRenderer id="tryitout" title="Now Try It Yourself">
+        <div style={styles.sectionContent}>
+          <p style={styles.paragraph}>
+            Now that you understand how the system works, let's explore it interactively. Follow these three steps:
+          </p>
+
+          <div style={{marginTop: '24px', marginBottom: '32px'}}>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+              gap: '20px',
+              marginBottom: '32px'
+            }}>
+              {/* Card 1: Dashboard */}
+              <div style={{
+                background: 'var(--surface)',
+                border: '2px solid #0277bd',
+                borderRadius: '8px',
+                padding: '24px',
+                textAlign: 'center',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-4px)';
+                e.currentTarget.style.boxShadow = '0 8px 16px rgba(2, 119, 189, 0.2)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
+              }}>
+                <div style={{fontSize: '48px', marginBottom: '12px'}}>📊</div>
+                <h3 style={{fontSize: '18px', fontWeight: 700, color: 'var(--text)', marginBottom: '12px'}}>Step 1: Dashboard</h3>
+                <p style={{color: 'var(--text)', marginBottom: '16px', fontSize: '14px', lineHeight: '1.6'}}>
+                  Upload a vessel CSV file and watch the system validate each record in real-time. See which records pass all checks and which ones fail.
+                </p>
+                <button style={{
+                  background: '#0277bd',
+                  color: '#fff',
+                  border: 'none',
+                  padding: '10px 24px',
+                  borderRadius: '6px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  width: '100%'
+                }}
+                onClick={() => window.location.href = '/#dashboard'}>
+                  Go to Dashboard →
+                </button>
+              </div>
+
+              {/* Card 2: Knowledge Graph */}
+              <div style={{
+                background: 'var(--surface)',
+                border: '2px solid #00796b',
+                borderRadius: '8px',
+                padding: '24px',
+                textAlign: 'center',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-4px)';
+                e.currentTarget.style.boxShadow = '0 8px 16px rgba(0, 121, 107, 0.2)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
+              }}>
+                <div style={{fontSize: '48px', marginBottom: '12px'}}>🔗</div>
+                <h3 style={{fontSize: '18px', fontWeight: 700, color: 'var(--text)', marginBottom: '12px'}}>Step 2: Knowledge Graph</h3>
+                <p style={{color: 'var(--text)', marginBottom: '16px', fontSize: '14px', lineHeight: '1.6'}}>
+                  Explore the interactive visualization. Click on vessels to see details, filter by type or flag, zoom through the graph, and spot relationships between vessels.
+                </p>
+                <button style={{
+                  background: '#00796b',
+                  color: '#fff',
+                  border: 'none',
+                  padding: '10px 24px',
+                  borderRadius: '6px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  width: '100%'
+                }}
+                onClick={() => window.location.href = '/#kg'}>
+                  Go to Knowledge Graph →
+                </button>
+              </div>
+
+              {/* Card 3: Chat */}
+              <div style={{
+                background: 'var(--surface)',
+                border: '2px solid #c62828',
+                borderRadius: '8px',
+                padding: '24px',
+                textAlign: 'center',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-4px)';
+                e.currentTarget.style.boxShadow = '0 8px 16px rgba(198, 40, 40, 0.2)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
+              }}>
+                <div style={{fontSize: '48px', marginBottom: '12px'}}>💬</div>
+                <h3 style={{fontSize: '18px', fontWeight: 700, color: 'var(--text)', marginBottom: '12px'}}>Step 3: Chat</h3>
+                <p style={{color: 'var(--text)', marginBottom: '16px', fontSize: '14px', lineHeight: '1.6'}}>
+                  Ask questions about your vessel data in natural language. The AI will query the knowledge graph and provide grounded, factual answers based on what you've validated.
+                </p>
+                <button style={{
+                  background: '#c62828',
+                  color: '#fff',
+                  border: 'none',
+                  padding: '10px 24px',
+                  borderRadius: '6px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  width: '100%'
+                }}
+                onClick={() => window.location.href = '/#chat'}>
+                  Go to Chat →
+                </button>
+              </div>
+            </div>
+
+            <div style={{
+              background: 'rgba(2, 119, 189, 0.1)',
+              border: '2px solid #0277bd',
+              borderRadius: '8px',
+              padding: '20px',
+              marginBottom: '20px'
+            }}>
+              <div style={{fontWeight: 700, color: 'var(--text)', marginBottom: '8px'}}>💡 Recommended Workflow:</div>
+              <ol style={{marginLeft: '20px', color: 'var(--text)', lineHeight: '1.8'}}>
+                <li><strong>Dashboard:</strong> Upload sample vessel data (or use test data)</li>
+                <li><strong>Dashboard:</strong> Review validation results - see which records are valid (green) vs invalid (red)</li>
+                <li><strong>Knowledge Graph:</strong> Explore the graph visualization and relationships</li>
+                <li><strong>Knowledge Graph:</strong> Filter vessels by type, flag, or validation status</li>
+                <li><strong>Chat:</strong> Ask questions like "How many valid tanker vessels are from Singapore?" or "Which records failed validation?"</li>
+              </ol>
+            </div>
           </div>
         </div>
       </SectionRenderer>
