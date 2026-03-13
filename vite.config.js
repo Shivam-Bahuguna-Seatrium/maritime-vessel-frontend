@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   optimizeDeps: {
-    exclude: ['vis-network', 'vis-data'],
+    exclude: ['vis-network', 'vis-data', '@neo4j-nvl/react', '@neo4j-nvl/base'],
     esbuildOptions: {
       supported: {
         bigint: true
@@ -33,6 +33,6 @@ export default defineConfig({
     }
   },
   ssr: {
-    external: ['vis-network', 'vis-data']
+    external: ['vis-network', 'vis-data', '@neo4j-nvl/react', '@neo4j-nvl/base']
   }
 })
