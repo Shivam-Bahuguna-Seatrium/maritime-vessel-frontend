@@ -433,45 +433,30 @@ graph TD
               After validation, the system builds a graph where each vessel becomes a node, connected to its type and flag information. Valid records appear in green, invalid ones in red.
             </p>
             <Mermaid chart={`
-%%{init: {'flowchart': {'htmlLabels': true}}}%%
 graph TD
-    A["<b>VESSEL NODES</b><br/>Green = Valid / Red = Invalid"]
+    A["Vessel 1<br/>Valid"]
+    B["Vessel 2<br/>Valid"]
+    C["Vessel 3<br/>Invalid"]
     
-    V1["<b>Vessel 1</b><br/>Tanker"]:::valid
-    V2["<b>Vessel 2</b><br/>Bulk Carrier"]:::valid
-    V3["<b>Vessel 3</b><br/>Invalid"]:::invalid
+    T1["Type:<br/>Tanker"]
+    T2["Type:<br/>Bulk Carrier"]
     
-    B[""]
+    F1["Flag:<br/>Singapore"]
+    F2["Flag:<br/>Japan"]
     
-    T1["<b>TYPE</b><br/>Tanker"]
-    T2["<b>TYPE</b><br/>Bulk Carrier"]
+    A --> T1
+    A --> F1
+    B --> T2
+    B --> F2
+    C --> T1
     
-    C[""]
-    
-    F1["<b>FLAG</b><br/>Singapore"]
-    F2["<b>FLAG</b><br/>Japan"]
-    
-    A --> V1
-    A --> V2
-    A --> V3
-    
-    V1 --> T1
-    V1 --> F1
-    V2 --> T2
-    V2 --> F2
-    V3 --> T1
-    
-    classDef valid fill:#c8e6c9,stroke:#0277bd,stroke-width:3px,color:#000
-    classDef invalid fill:#ffcdd2,stroke:#d32f2f,stroke-width:3px,color:#000
-    classDef header fill:#e3f2fd,stroke:#0277bd,stroke-width:3px,color:#000
-    classDef type fill:#bbdefb,stroke:#0277bd,stroke-width:2px,color:#000
-    classDef flag fill:#ffe0b2,stroke:#0277bd,stroke-width:2px,color:#000
-    classDef blank fill:none,stroke:none
-    
-    class A header
-    class T1,T2 type
-    class F1,F2 flag
-    class B,C blank
+    style A fill:#c8e6c9,stroke:#0277bd,stroke-width:2px,color:#000
+    style B fill:#c8e6c9,stroke:#0277bd,stroke-width:2px,color:#000
+    style C fill:#ffcdd2,stroke:#d32f2f,stroke-width:2px,color:#000
+    style T1 fill:#bbdefb,stroke:#0277bd,stroke-width:2px,color:#000
+    style T2 fill:#bbdefb,stroke:#0277bd,stroke-width:2px,color:#000
+    style F1 fill:#ffe0b2,stroke:#0277bd,stroke-width:2px,color:#000
+    style F2 fill:#ffe0b2,stroke:#0277bd,stroke-width:2px,color:#000
             `} />
             <ul style={styles.list}>
               <li style={styles.listItem}><strong>Vessel Nodes:</strong> Each vessel is a node with all properties (name, IMO, MMSI, type, flag, dimensions, build year)</li>
@@ -488,34 +473,31 @@ graph TD
             </p>
             <Mermaid chart={`
 graph TD
-    A["<b>VIS-NETWORK</b><br/>Interactive Visualization"]:::header
+    A["VIS-NETWORK<br/>Graph Viewer"]
     
-    B["<b>🔍 FILTER</b><br/>Type, Flag, Name"]:::feature
-    C["<b>👆 CLICK</b><br/>View Details"]:::feature
-    D["<b>🔎 ZOOM</b><br/>Explore"]:::feature
+    B["Filter Data"]
+    C["Click Nodes"]
+    D["Zoom In/Out"]
     
-    E[""]
-    
-    F["<b>🖱️ PAN</b><br/>Navigate"]:::action
-    G["<b>✋ DRAG</b><br/>Reposition"]:::action
-    H["<b>⚙️ QUERY</b><br/>Search"]:::action
+    E["Pan Graph"]
+    F["Drag Nodes"]
+    G["Search Data"]
     
     A --> B
     A --> C
     A --> D
+    
     B --> E
-    C --> E
-    D --> E
-    E --> F
-    E --> G
-    E --> H
+    C --> F
+    D --> G
     
-    classDef header fill:#0277bd,stroke:#0277bd,stroke-width:3px,color:#fff
-    classDef feature fill:#c8e6c9,stroke:#0277bd,stroke-width:2px,color:#000
-    classDef action fill:#fff9e6,stroke:#0277bd,stroke-width:2px,color:#000
-    classDef blank fill:none,stroke:none
-    
-    class E blank
+    style A fill:#0277bd,stroke:#0277bd,stroke-width:2px,color:#fff
+    style B fill:#c8e6c9,stroke:#0277bd,stroke-width:2px,color:#000
+    style C fill:#c8e6c9,stroke:#0277bd,stroke-width:2px,color:#000
+    style D fill:#c8e6c9,stroke:#0277bd,stroke-width:2px,color:#000
+    style E fill:#fff9e6,stroke:#0277bd,stroke-width:2px,color:#000
+    style F fill:#fff9e6,stroke:#0277bd,stroke-width:2px,color:#000
+    style G fill:#fff9e6,stroke:#0277bd,stroke-width:2px,color:#000
             `} />
             <ul style={styles.list}>
               <li style={styles.listItem}><strong>Filter:</strong> Filter by vessel type, flag, name, or validation status</li>
