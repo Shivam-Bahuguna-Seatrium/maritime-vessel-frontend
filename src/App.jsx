@@ -68,22 +68,63 @@ export default function App() {
         try {
           DEBUG.log('APP', '📊 Loading all graph data...');
           
-          // Load both graph data and filter options in parallel
-          const [graphRes, filterRes] = await Promise.all([
-            fetch(`${DEFAULT_API_URL}/api/kg/data?limit=10000`),
-            fetch(`${DEFAULT_API_URL}/api/kg/filters`),
-          ]);
+          const graphRes = await fetch(`${DEFAULT_API_URL}/api/kg/data?limit=10000`);
 
           if (graphRes.ok) {
             const gData = await graphRes.json();
             setGraphData(gData);
             DEBUG.info('APP', `Loaded ${gData.nodes?.length || 0} nodes and ${gData.relationships?.length || 0} relationships`);
-          }
-
-          if (filterRes.ok) {
-            const fData = await filterRes.json();
+            
+            // Extract filter options from graph data
+            const categories = [];
+            const vesselTypes = [];
+            const vesselNames = [];
+            const flags = [];
+            const validationStatuses = [];
+            const categoryMap = new Map();
+            
+            gData.nodes?.forEach(node => {
+              const labels = node.labels || [];
+              const props = node.properties || {};
+              
+              if (labels.includes('Category')) {
+                const cat = node.id || props.name;
+                if (cat && !categoryMap.has(cat)) {
+                  categories.push(cat);
+                  categoryMap.set(cat, true);
+                }
+              } else if (labels.includes('VesselType')) {
+                const type = node.id || props.name;
+                if (type && !vesselTypes.includes(type)) vesselTypes.push(type);
+              } else if (labels.includes('Vessel')) {
+                const name = node.id || props.name;
+                if (name && !vesselNames.includes(name)) vesselNames.push(name);
+              } else if (labels.includes('Flag')) {
+                const flag = node.id || props.name;
+                if (flag && !flags.includes(flag)) flags.push(flag);
+              } else if (labels.includes('ValidationStatus')) {
+                const status = node.id || props.name;
+                if (status && !validationStatuses.includes(status)) validationStatuses.push(status);
+              }
+            });
+            
+            const fData = {
+              categories,
+              vessel_types: vesselTypes,
+              vessel_names: vesselNames,
+              flags,
+              validation_statuses: validationStatuses,
+              vessel_count: vesselNames.length,
+            };
+            
             setFilterOptions(fData);
-            DEBUG.info('APP', 'Loaded filter options', fData);
+            DEBUG.info('APP', 'Extracted filter options from graph data', {
+              categories: categories.length,
+              vessel_types: vesselTypes.length,
+              vessels: vesselNames.length,
+              flags: flags.length,
+              statuses: validationStatuses.length,
+            });
           }
         } catch (err) {
           DEBUG.apiError('APP', 'Loading graph data', err);
