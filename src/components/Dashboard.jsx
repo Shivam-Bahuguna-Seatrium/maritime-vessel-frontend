@@ -99,20 +99,26 @@ export default function Dashboard({ status, refreshStatus }) {
       
       if (response.ok) {
         const data = await response.json();
-        DEBUG.info('DASHBOARD', 'Default CSV loaded successfully', data);
-        setDefaultFileName('case_study_dataset_202509152039.csv');
-        setMessage(`📁 Auto-loaded: ${data.records} records with ${data.columns.length} columns.`);
-        refreshStatus();
+        DEBUG.info('DASHBOARD', 'Default CSV load response', data);
+        
+        if (data.available) {
+          // Default dataset was successfully loaded
+          setDefaultFileName('case_study_dataset_202509152039.csv');
+          setMessage(`📁 Auto-loaded: ${data.records} records with ${data.columns.length} columns.`);
+          refreshStatus();
+        } else {
+          // Default dataset not available
+          DEBUG.warn('DASHBOARD', 'Default dataset not available');
+          setMessage('💡 Tip: Upload a CSV file to get started. No default dataset found.');
+        }
       } else {
         // If auto-load fails, show upload prompt
         DEBUG.warn('DASHBOARD', `Load-default returned ${response.status}`);
-        const errorText = await response.text();
-        DEBUG.error('DASHBOARD', 'Server response', errorText);
-        setMessage('Upload a CSV file to get started.');
+        setMessage('💡 Tip: Upload a CSV file to get started.');
       }
     } catch (e) {
       DEBUG.apiError('GET', `${API_BASE_URL}/api/load-default`, e);
-      setMessage('Upload a CSV file to get started.');
+      setMessage('💡 Tip: Upload a CSV file to get started.');
     }
   };
 
