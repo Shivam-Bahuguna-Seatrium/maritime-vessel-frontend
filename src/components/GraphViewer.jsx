@@ -116,17 +116,38 @@ export default function GraphViewer({ filters, graphBuilt }) {
       from: r.startNode,
       to: r.endNode,
       label: r.type,
-      smooth: { type: 'cubicBezier' },
+      smooth: { type: 'continuous' },
     }));
+
+    // Optimize physics based on graph size
+    const nodeCount = visNodes.length;
+    const enablePhysics = nodeCount <= 100;
+    const stabilizationIterations = nodeCount > 50 ? 50 : 100;
 
     const options = {
       physics: {
-        enabled: true,
-        stabilization: { iterations: 200 },
+        enabled: enablePhysics,
+        stabilization: { 
+          iterations: stabilizationIterations,
+          fit: true,
+        },
+        barnesHut: {
+          gravitationalConstant: -26000,
+          centralGravity: 0.3,
+          springLength: 200,
+          springConstant: 0.04,
+          damping: 0.09,
+          avoidOverlap: 0.1,
+        },
       },
       interaction: {
         navigationButtons: true,
         keyboard: true,
+        zoomView: true,
+        dragView: true,
+      },
+      layout: {
+        randomSeed: 42,
       },
     };
 
@@ -142,8 +163,15 @@ export default function GraphViewer({ filters, graphBuilt }) {
           setSelected(null);
         }
       });
+      // Stop physics after stabilization to prevent continuous computation
+      if (enablePhysics) {
+        networkRef.current.once('stabilizationIterationsDone', () => {
+          networkRef.current.setOptions({ physics: false });
+        });
+      }
     } else {
       networkRef.current.setData({ nodes: visNodes, edges: visEdges });
+      networkRef.current.setOptions(options);
     }
   }, [graphData]);
 
