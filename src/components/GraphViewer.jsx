@@ -97,6 +97,18 @@ export default function GraphViewer({ filters, graphBuilt }) {
     fetchGraph(); 
   }, [fetchGraph]);
 
+  // Handle window resize for responsive graph layout
+  useEffect(() => {
+    const handleWindowResize = () => {
+      if (networkRef.current && containerRef.current) {
+        networkRef.current.redraw();
+      }
+    };
+
+    window.addEventListener('resize', handleWindowResize);
+    return () => window.removeEventListener('resize', handleWindowResize);
+  }, []);
+
   // Render vis-network when graph data changes
   useEffect(() => {
     if (!containerRef.current || graphData.nodes.length === 0) return;
@@ -173,6 +185,21 @@ export default function GraphViewer({ filters, graphBuilt }) {
       networkRef.current.setData({ nodes: visNodes, edges: visEdges });
       networkRef.current.setOptions(options);
     }
+
+    // Handle container resize for web mode responsive layout
+    const resizeObserver = new ResizeObserver(() => {
+      if (networkRef.current) {
+        networkRef.current.redraw();
+      }
+    });
+
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    }
+
+    return () => {
+      resizeObserver.disconnect();
+    };
   }, [graphData]);
 
   if (!graphBuilt) {
@@ -273,10 +300,10 @@ export default function GraphViewer({ filters, graphBuilt }) {
         {/* Detail panel */}
         {selected && (
           <div className="detail-panel" style={{
-            position: 'absolute', top: 10, right: 10, width: 300,
+            position: 'absolute', top: 10, right: 10, width: 'clamp(280px, 90%, 300px)',
             background: 'var(--surface)', border: '1px solid var(--border)',
             borderRadius: 'var(--radius)', padding: 14,
-            maxHeight: '70%', overflowY: 'auto', fontSize: '0.8rem',
+            maxHeight: 'clamp(200px, 70vh, 70%)', overflowY: 'auto', fontSize: '0.8rem',
             boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
             zIndex: 10,
           }}>
