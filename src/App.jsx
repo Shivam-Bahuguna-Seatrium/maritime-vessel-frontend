@@ -22,8 +22,6 @@ export default function App() {
     validated: false,
     graph_built: false,
   });
-  const [graphData, setGraphData] = useState(null); // Cache all graph data
-  const [filterOptions, setFilterOptions] = useState(null); // Cache filter options
 
   // Log app initialization
   useEffect(() => {
@@ -60,80 +58,6 @@ export default function App() {
       DEBUG.apiError('GET', `${DEFAULT_API_URL}/api/status`, err);
     }
   }, []);
-
-  // Load all graph data once when graph is built
-  useEffect(() => {
-    if (status.graph_built && !graphData) {
-      const loadGraphData = async () => {
-        try {
-          DEBUG.log('APP', '📊 Loading all graph data...');
-          
-          const graphRes = await fetch(`${DEFAULT_API_URL}/api/kg/data?limit=10000`);
-
-          if (graphRes.ok) {
-            const gData = await graphRes.json();
-            setGraphData(gData);
-            DEBUG.info('APP', `Loaded ${gData.nodes?.length || 0} nodes and ${gData.relationships?.length || 0} relationships`);
-            
-            // Extract filter options from graph data
-            const categories = [];
-            const vesselTypes = [];
-            const vesselNames = [];
-            const flags = [];
-            const validationStatuses = [];
-            const categoryMap = new Map();
-            
-            gData.nodes?.forEach(node => {
-              const labels = node.labels || [];
-              const props = node.properties || {};
-              
-              if (labels.includes('Category')) {
-                const cat = node.id || props.name;
-                if (cat && !categoryMap.has(cat)) {
-                  categories.push(cat);
-                  categoryMap.set(cat, true);
-                }
-              } else if (labels.includes('VesselType')) {
-                const type = node.id || props.name;
-                if (type && !vesselTypes.includes(type)) vesselTypes.push(type);
-              } else if (labels.includes('Vessel')) {
-                const name = node.id || props.name;
-                if (name && !vesselNames.includes(name)) vesselNames.push(name);
-              } else if (labels.includes('Flag')) {
-                const flag = node.id || props.name;
-                if (flag && !flags.includes(flag)) flags.push(flag);
-              } else if (labels.includes('ValidationStatus')) {
-                const status = node.id || props.name;
-                if (status && !validationStatuses.includes(status)) validationStatuses.push(status);
-              }
-            });
-            
-            const fData = {
-              categories,
-              vessel_types: vesselTypes,
-              vessel_names: vesselNames,
-              flags,
-              validation_statuses: validationStatuses,
-              vessel_count: vesselNames.length,
-            };
-            
-            setFilterOptions(fData);
-            DEBUG.info('APP', 'Extracted filter options from graph data', {
-              categories: categories.length,
-              vessel_types: vesselTypes.length,
-              vessels: vesselNames.length,
-              flags: flags.length,
-              statuses: validationStatuses.length,
-            });
-          }
-        } catch (err) {
-          DEBUG.apiError('APP', 'Loading graph data', err);
-        }
-      };
-
-      loadGraphData();
-    }
-  }, [status.graph_built, graphData]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw', overflow: 'hidden', position: 'relative' }}>
@@ -224,21 +148,15 @@ export default function App() {
               graphBuilt={status.graph_built}
               filters={graphFilters}
               onChange={setGraphFilters}
-              filterOptions={filterOptions}
             />
             <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }} className="graph-container">
-              <GraphViewer 
-                filters={graphFilters} 
-                graphBuilt={status.graph_built} 
-                refreshStatus={refreshStatus}
-                rawGraphData={graphData}
-              />
+              <GraphViewer filters={graphFilters} graphBuilt={status.graph_built} refreshStatus={refreshStatus} />
             </div>
           </div>
         )}
 
         {tab === 'Chat' && (
-          <ChatPanel graphBuilt={status.graph_built} rawGraphData={graphData} />
+          <ChatPanel graphBuilt={status.graph_built} />
         )}
 
         {tab === 'Case Study' && (

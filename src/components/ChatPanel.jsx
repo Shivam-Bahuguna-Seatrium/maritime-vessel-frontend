@@ -75,7 +75,7 @@ RETURN COUNT(*) AS total_vessels, AVG(v.properties.gross_tonnage) AS avg_tonnage
   },
 ];
 
-export default function ChatPanel({ graphBuilt, rawGraphData }) {
+export default function ChatPanel({ graphBuilt }) {
   const [messages, setMessages] = useState([
     {
       role: 'assistant',

@@ -7,7 +7,7 @@ import { API_BASE_URL } from '../api';
  *
  * Filter chain: Category → Vessel Type → Flag → Validation Status
  */
-export default function FilterPanel({ graphBuilt, filters, onChange, filterOptions }) {
+export default function FilterPanel({ graphBuilt, filters, onChange }) {
   const [allOptions, setAllOptions] = useState({
     categories: [],
     vessel_types: [],
@@ -24,64 +24,39 @@ export default function FilterPanel({ graphBuilt, filters, onChange, filterOptio
     validation_statuses: [],
   });
 
-  // Use cached filter options from App, or fetch if not provided
   useEffect(() => {
     if (!graphBuilt) return;
-    
-    if (filterOptions) {
-      // Use cached options from App
-      DEBUG.log('FILTERPANEL', 'Using cached filter options');
-      const newOptions = {
-        categories: filterOptions.categories || [],
-        vessel_types: filterOptions.vessel_types || [],
-        vessel_names: filterOptions.vessel_names || [],
-        flags: filterOptions.flags || [],
-        validation_statuses: filterOptions.validation_statuses || [],
-        vessel_count: filterOptions.vessel_count || 0,
-      };
-      DEBUG.log('FILTERPANEL', `Processed ${newOptions.categories.length} categories, ${newOptions.vessel_types.length} types`, newOptions);
-      setAllOptions(newOptions);
-      setFilteredOptions({
-        categories: newOptions.categories,
-        vessel_types: newOptions.vessel_types,
-        vessel_names: newOptions.vessel_names,
-        flags: newOptions.flags,
-        validation_statuses: newOptions.validation_statuses,
-      });
-    } else {
-      // Fallback to API call (for backward compatibility)
-      DEBUG.log('FILTERPANEL', 'Loading filters from API...');
-      DEBUG.api('GET', `${API_BASE_URL}/api/kg/filters`);
-      fetch(`${API_BASE_URL}/api/kg/filters`)
-        .then(r => {
-          DEBUG.apiResponse('GET', `${API_BASE_URL}/api/kg/filters`, r.status);
-          return r.json();
-        })
-        .then(data => {
-          DEBUG.info('FILTERPANEL', 'Filters API response received', data);
-          const newOptions = {
-            categories: data.categories || [],
-            vessel_types: data.vessel_types || [],
-            vessel_names: data.vessel_names || [],
-            flags: data.flags || [],
-            validation_statuses: data.validation_statuses || [],
-            vessel_count: data.vessel_count || 0,
-          };
-          DEBUG.log('FILTERPANEL', `Processed ${newOptions.categories.length} categories, ${newOptions.vessel_types.length} types`, newOptions);
-          setAllOptions(newOptions);
-          setFilteredOptions({
-            categories: newOptions.categories,
-            vessel_types: newOptions.vessel_types,
-            vessel_names: newOptions.vessel_names,
-            flags: newOptions.flags,
-            validation_statuses: newOptions.validation_statuses,
-          });
-        })
-        .catch((err) => {
-          DEBUG.apiError('GET', '/api/kg/filters', err);
+    DEBUG.log('FILTERPANEL', 'Loading filters...');
+    DEBUG.api('GET', `${API_BASE_URL}/api/kg/filters`);
+    fetch(`${API_BASE_URL}/api/kg/filters`)
+      .then(r => {
+        DEBUG.apiResponse('GET', `${API_BASE_URL}/api/kg/filters`, r.status);
+        return r.json();
+      })
+      .then(data => {
+        DEBUG.info('FILTERPANEL', 'Filters API response received', data);
+        const newOptions = {
+          categories: data.categories || [],
+          vessel_types: data.vessel_types || [],
+          vessel_names: data.vessel_names || [],
+          flags: data.flags || [],
+          validation_statuses: data.validation_statuses || [],
+          vessel_count: data.vessel_count || 0,
+        };
+        DEBUG.log('FILTERPANEL', `Processed ${newOptions.categories.length} categories, ${newOptions.vessel_types.length} types`, newOptions);
+        setAllOptions(newOptions);
+        setFilteredOptions({
+          categories: newOptions.categories,
+          vessel_types: newOptions.vessel_types,
+          vessel_names: newOptions.vessel_names,
+          flags: newOptions.flags,
+          validation_statuses: newOptions.validation_statuses,
         });
-    }
-  }, [graphBuilt, filterOptions]);
+      })
+      .catch((err) => {
+        DEBUG.apiError('GET', '/api/kg/filters', err);
+      });
+  }, [graphBuilt]);
 
   // Update filtered options when filters change - cascade filtering
   useEffect(() => {
