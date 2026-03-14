@@ -12,6 +12,9 @@ const TABS = ['Case Study', 'Dashboard', 'Knowledge Graph', 'Chat'];
 // Get API base URL from environment or default to relative path
 const DEFAULT_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
+// SessionStorage key for graph cache (versioned to invalidate on schema changes)
+const GRAPH_CACHE_KEY = 'maritime_graph_cache_v1';
+
 export default function App() {
   const [tab, setTab] = useState('Case Study');
   const [graphFilters, setGraphFilters] = useState({});
@@ -23,11 +26,30 @@ export default function App() {
     graph_built: false,
   });
 
+  // ── Centralized Graph Cache ──────────────────────────────────────────────
+  // Populated once after "Build Graph" and used by ALL components.
+  // Shape: { allOptions, vesselMeta, allGraphData, fetchedAt }
+  // Persisted to sessionStorage so browser-refresh keeps the data.
+  const [graphCache, setGraphCache] = useState(() => {
+    try {
+      const raw = sessionStorage.getItem(GRAPH_CACHE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  // Authoritative graph_built flag: backend OR local cache
+  const graphBuilt = status.graph_built || (graphCache !== null);
+
   // Log app initialization
   useEffect(() => {
     DEBUG.log('APP', '🚀 App initialized');
     DEBUG.log('APP', `Environment: ${window.location.hostname}:${window.location.port}`);
     DEBUG.log('APP', `API Base URL: ${DEFAULT_API_URL}`);
+    if (graphCache) {
+      DEBUG.log('APP', `Restored graph cache from sessionStorage: ${graphCache.allOptions?.vessel_count} vessels, ${graphCache.allGraphData?.nodes?.length} nodes`);
+    }
   }, []);
 
   // Handle keyboard shortcut to open debug panel (Alt+D)
@@ -49,7 +71,12 @@ export default function App() {
       DEBUG.apiResponse('GET', `${DEFAULT_API_URL}/api/status`, res.status, { ok: res.ok });
       if (res.ok) {
         const data = await res.json();
-        setStatus(data);
+        // IMPORTANT: never override a locally-known graph_built=true with a stale
+        // serverless response of false. The cache IS the truth.
+        setStatus(prev => ({
+          ...data,
+          graph_built: data.graph_built || prev.graph_built,
+        }));
         DEBUG.info('APP', 'Status refreshed', data);
       } else {
         DEBUG.warn('APP', `Status endpoint returned ${res.status}`);
@@ -57,6 +84,37 @@ export default function App() {
     } catch (err) {
       DEBUG.apiError('GET', `${DEFAULT_API_URL}/api/status`, err);
     }
+  }, []);
+
+  /**
+   * Called by Dashboard after build-graph + data fetch succeeds.
+   * Saves the complete graph cache to React state and sessionStorage.
+   */
+  const handleGraphBuilt = useCallback((cache) => {
+    setGraphCache(cache);
+    setStatus(prev => ({ ...prev, graph_built: true }));
+    try {
+      sessionStorage.setItem(GRAPH_CACHE_KEY, JSON.stringify(cache));
+      DEBUG.info('APP', `Graph cache saved (${JSON.stringify(cache).length} bytes)`);
+    } catch (e) {
+      // SessionStorage quota exceeded – try saving minimal cache
+      DEBUG.warn('APP', 'sessionStorage quota exceeded, saving minimal cache', e);
+      try {
+        const minimalCache = {
+          allOptions: cache.allOptions,
+          vesselMeta: cache.vesselMeta,
+          allGraphData: null,
+          fetchedAt: cache.fetchedAt,
+        };
+        sessionStorage.setItem(GRAPH_CACHE_KEY, JSON.stringify(minimalCache));
+      } catch {
+        // Can't persist – graphCache stays in React state only (survives tab switches)
+      }
+    }
+    DEBUG.info('APP', 'Graph built and cached', {
+      vessels: cache.allOptions?.vessel_count,
+      nodes: cache.allGraphData?.nodes?.length,
+    });
   }, []);
 
   return (
@@ -105,7 +163,7 @@ export default function App() {
               : <span className="badge warning">No</span>}
           </span>
           <span title="Knowledge graph building status">
-            Graph: {status.graph_built
+            Graph: {graphBuilt
               ? <span className="badge valid">Built</span>
               : <span className="badge warning">Pending</span>}
           </span>
@@ -139,24 +197,25 @@ export default function App() {
       {/* ---- Body ---- */}
       <main style={{ flex: 1, overflow: 'auto', overflowX: 'hidden' }}>
         {tab === 'Dashboard' && (
-          <Dashboard status={status} refreshStatus={refreshStatus} />
+          <Dashboard status={{ ...status, graph_built: graphBuilt }} refreshStatus={refreshStatus} onGraphBuilt={handleGraphBuilt} />
         )}
 
         {tab === 'Knowledge Graph' && (
           <div style={{ display: 'flex', gap: 16, height: '100%' }} className="kg-layout">
             <FilterPanel
-              graphBuilt={status.graph_built}
+              graphBuilt={graphBuilt}
               filters={graphFilters}
               onChange={setGraphFilters}
+              graphCache={graphCache}
             />
             <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }} className="graph-container">
-              <GraphViewer filters={graphFilters} graphBuilt={status.graph_built} refreshStatus={refreshStatus} />
+              <GraphViewer filters={graphFilters} graphBuilt={graphBuilt} refreshStatus={refreshStatus} graphCache={graphCache} />
             </div>
           </div>
         )}
 
         {tab === 'Chat' && (
-          <ChatPanel graphBuilt={status.graph_built} />
+          <ChatPanel graphBuilt={graphBuilt} graphCache={graphCache} />
         )}
 
         {tab === 'Case Study' && (

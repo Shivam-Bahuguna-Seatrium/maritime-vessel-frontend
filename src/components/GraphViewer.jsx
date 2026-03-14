@@ -3,45 +3,77 @@ import DEBUG from '../debug';
 import { API_BASE_URL } from '../api';
 import { Network } from 'vis-network';
 
-export default function GraphViewer({ filters, graphBuilt }) {
+/**
+ * Apply filters to the full cached graph data client-side.
+ * Mirrors the backend get_graph_data() logic but runs entirely in the browser.
+ */
+function filterGraphDataClientSide(allGraphData, filters) {
+  if (!allGraphData?.nodes) return { nodes: [], relationships: [] };
+
+  let filteredVessels = allGraphData.nodes.filter(n => n.labels?.includes('Vessel'));
+
+  if (filters.category) filteredVessels = filteredVessels.filter(v => v.properties?.category === filters.category);
+  if (filters.vessel_type) filteredVessels = filteredVessels.filter(v => v.properties?.vessel_type === filters.vessel_type);
+  if (filters.vessel_name) filteredVessels = filteredVessels.filter(v => v.properties?.name === filters.vessel_name);
+  if (filters.flag) filteredVessels = filteredVessels.filter(v => v.properties?.flag === filters.flag);
+  if (filters.validation_status) filteredVessels = filteredVessels.filter(v => v.properties?.validation_status === filters.validation_status);
+
+  const vesselIdSet = new Set(filteredVessels.map(v => v.id));
+  // Include 1-hop neighbours (same as backend)
+  const filteredRels = (allGraphData.relationships || []).filter(r => vesselIdSet.has(r.startNode));
+  const connectedIds = new Set(filteredRels.map(r => r.endNode));
+  const filteredNodes = allGraphData.nodes.filter(n => vesselIdSet.has(n.id) || connectedIds.has(n.id));
+
+  return { nodes: filteredNodes, relationships: filteredRels };
+}
+
+export default function GraphViewer({ filters, graphBuilt, refreshStatus, graphCache }) {
   const [graphData, setGraphData] = useState({ nodes: [], relationships: [] });
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState(null);
-  const [vesselCount, setVesselCount] = useState(0);
   const [dataLimit, setDataLimit] = useState(20);
   const networkRef = useRef(null);
   const containerRef = useRef(null);
 
-  // Fetch vessel count when graph is built
-  useEffect(() => {
-    if (!graphBuilt) return;
-    DEBUG.log('GRAPHVIEWER', 'Fetching vessel count...');
-    DEBUG.api('GET', `${API_BASE_URL}/api/kg/filters`);
-    fetch(`${API_BASE_URL}/api/kg/filters`)
-      .then(r => {
-        DEBUG.apiResponse('GET', `${API_BASE_URL}/api/kg/filters`, r.status);
-        return r.json();
-      })
-      .then(data => {
-        DEBUG.info('GRAPHVIEWER', 'Filters API response received', data);
-        const count = data.vessel_count || data.vessel_names?.length || 0;
-        DEBUG.log('GRAPHVIEWER', `Setting vessel count to: ${count}`);
-        setVesselCount(count);
-      })
-      .catch(err => {
-        DEBUG.apiError('GET', '/api/kg/filters', err);
-      });
-  }, [graphBuilt]);
+  // Derive vessel count from cache (zero backend calls) or fall back to 0
+  const vesselCount = graphCache?.allOptions?.vessel_count ?? 0;
 
-  // Fetch graph data whenever filters change
+  // ── Fetch / filter graph data ──────────────────────────────────────────────
+  // When graphCache is available: client-side filtering (zero backend calls).
+  // When graphCache is null: fall back to backend API (may fail on stateless serverless).
   const fetchGraph = useCallback(async () => {
     if (!graphBuilt) return;
     setLoading(true);
-    DEBUG.log('GRAPHVIEWER', 'Fetching graph data with filters', filters);
+    DEBUG.log('GRAPHVIEWER', 'Updating graph data with filters', filters);
+
+    if (graphCache?.allGraphData) {
+      // ✅ Client-side filtering from full cached graph data
+      let data = filterGraphDataClientSide(graphCache.allGraphData, filters);
+      DEBUG.info('GRAPHVIEWER', `Client-side filter: ${data.nodes?.length} nodes, ${data.relationships?.length} rels`);
+
+      // Apply dataLimit on vessels (same UX as before)
+      const vessels = data.nodes.filter(n => n.labels?.includes('Vessel'));
+      if (vessels.length > dataLimit) {
+        const limitedVessels = vessels.slice(0, dataLimit);
+        const limitedVesselIds = new Set(limitedVessels.map(v => v.id));
+        const others = data.nodes.filter(n => !n.labels?.includes('Vessel'));
+        const limitedRels = data.relationships.filter(r => limitedVesselIds.has(r.startNode));
+        data = {
+          nodes: [...limitedVessels, ...others.slice(0, 100)],
+          relationships: limitedRels,
+        };
+        DEBUG.log('GRAPHVIEWER', `Limited to ${limitedVessels.length} vessels for display`);
+      }
+
+      setGraphData(data);
+      setLoading(false);
+      return;
+    }
+
+    // ⚠️ Fallback: fetch from backend
+    DEBUG.log('GRAPHVIEWER', 'No cache – fetching graph from backend...');
     try {
       const params = new URLSearchParams();
-      
-      // Apply filters - Category → Vessel Type → Vessel Name → Flag → Validation Status
       if (filters.category) params.set('category', filters.category);
       if (filters.vessel_type) params.set('vessel_type', filters.vessel_type);
       if (filters.vessel_name) params.set('vessel_name', filters.vessel_name);
@@ -49,34 +81,32 @@ export default function GraphViewer({ filters, graphBuilt }) {
       if (filters.validation_status) params.set('validation_status', filters.validation_status);
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
-      
-      // Use new dedicated knowledge graph router
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+
       const url = `${API_BASE_URL}/api/kg/data?${params}`;
       DEBUG.api('GET', url);
       const res = await fetch(url, { signal: controller.signal });
       clearTimeout(timeoutId);
       DEBUG.apiResponse('GET', url, res.status);
-      
+
       if (res.ok) {
         let data = await res.json();
         DEBUG.info('GRAPHVIEWER', `Received ${data.nodes?.length} nodes and ${data.relationships?.length} relationships`);
-        
-        // Frontend-side limiting if too many nodes
+
+        // Apply dataLimit
         if (data.nodes && data.nodes.length > dataLimit) {
           const vessels = data.nodes.filter(n => n.labels?.includes('Vessel'));
           const others = data.nodes.filter(n => !n.labels?.includes('Vessel'));
           const limitedVessels = vessels.slice(0, dataLimit);
           const limitedVesselIds = new Set(limitedVessels.map(v => v.id));
           const limitedRels = data.relationships.filter(r => limitedVesselIds.has(r.startNode));
-          
           data = {
             nodes: [...limitedVessels, ...others.slice(0, 100)],
             relationships: limitedRels,
           };
           DEBUG.log('GRAPHVIEWER', `Limited to ${limitedVessels.length} vessels`);
         }
-        
+
         setGraphData(data || { nodes: [], relationships: [] });
       } else {
         DEBUG.error('GRAPHVIEWER', `Graph fetch error: ${res.status} ${res.statusText}`);
@@ -91,10 +121,10 @@ export default function GraphViewer({ filters, graphBuilt }) {
       setGraphData({ nodes: [], relationships: [] });
     }
     setLoading(false);
-  }, [filters, graphBuilt, dataLimit]);
+  }, [filters, graphBuilt, dataLimit, graphCache]);
 
-  useEffect(() => { 
-    fetchGraph(); 
+  useEffect(() => {
+    fetchGraph();
   }, [fetchGraph]);
 
   // Handle window resize for responsive graph layout
@@ -142,7 +172,6 @@ export default function GraphViewer({ filters, graphBuilt }) {
     const nodeCount = visNodes.length;
     const enablePhysics = nodeCount <= 100;
     const stabilizationIterations = nodeCount > 50 ? 50 : 100;
-    const isNewNetwork = !networkRef.current;
 
     const options = {
       physics: {

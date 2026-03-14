@@ -5,9 +5,37 @@ import { API_BASE_URL } from '../api';
 /**
  * FilterPanel – hierarchical dropdown filters for the Knowledge Graph.
  *
- * Filter chain: Category → Vessel Type → Flag → Validation Status
+ * When graphCache is provided: all filtering is done client-side (zero backend calls).
+ * When graphCache is null: falls back to backend API calls (legacy / cold-start path).
+ *
+ * Filter chain: Category → Vessel Type → Vessel Name → Flag → Validation Status
  */
-export default function FilterPanel({ graphBuilt, filters, onChange }) {
+
+/**
+ * Compute cascading dropdown options client-side from the compact vesselMeta array.
+ * Each level is narrowed by all selections above it in the chain.
+ */
+function computeCascadeOptions(vesselMeta, filters) {
+  // Categories always show every available category regardless of other selections
+  const allCategories = [...new Set(vesselMeta.map(v => v.category).filter(Boolean))].sort();
+
+  let filtered = vesselMeta;
+  if (filters.category) filtered = filtered.filter(v => v.category === filters.category);
+  const vessel_types = [...new Set(filtered.map(v => v.vessel_type).filter(Boolean))].sort();
+
+  if (filters.vessel_type) filtered = filtered.filter(v => v.vessel_type === filters.vessel_type);
+  const vessel_names = [...new Set(filtered.map(v => v.name).filter(Boolean))].sort();
+
+  if (filters.vessel_name) filtered = filtered.filter(v => v.name === filters.vessel_name);
+  const flags = [...new Set(filtered.map(v => v.flag).filter(Boolean))].sort();
+
+  if (filters.flag) filtered = filtered.filter(v => v.flag === filters.flag);
+  const validation_statuses = [...new Set(filtered.map(v => v.validation_status).filter(Boolean))].sort();
+
+  return { categories: allCategories, vessel_types, vessel_names, flags, validation_statuses };
+}
+
+export default function FilterPanel({ graphBuilt, filters, onChange, graphCache }) {
   const [allOptions, setAllOptions] = useState({
     categories: [],
     vessel_types: [],
@@ -24,90 +52,113 @@ export default function FilterPanel({ graphBuilt, filters, onChange }) {
     validation_statuses: [],
   });
 
+  // ── Initialise dropdown options ──────────────────────────────────────────
+  // Priority: graphCache (client-side, zero cost) → backend API (fallback)
   useEffect(() => {
     if (!graphBuilt) return;
-    DEBUG.log('FILTERPANEL', 'Loading filters...');
-    DEBUG.api('GET', `${API_BASE_URL}/api/kg/filters`);
-    fetch(`${API_BASE_URL}/api/kg/filters`)
-      .then(r => {
-        DEBUG.apiResponse('GET', `${API_BASE_URL}/api/kg/filters`, r.status);
-        return r.json();
-      })
-      .then(data => {
-        DEBUG.info('FILTERPANEL', 'Filters API response received', data);
-        const newOptions = {
-          categories: data.categories || [],
-          vessel_types: data.vessel_types || [],
-          vessel_names: data.vessel_names || [],
-          flags: data.flags || [],
-          validation_statuses: data.validation_statuses || [],
-          vessel_count: data.vessel_count || 0,
-        };
-        DEBUG.log('FILTERPANEL', `Processed ${newOptions.categories.length} categories, ${newOptions.vessel_types.length} types`, newOptions);
-        setAllOptions(newOptions);
-        setFilteredOptions({
-          categories: newOptions.categories,
-          vessel_types: newOptions.vessel_types,
-          vessel_names: newOptions.vessel_names,
-          flags: newOptions.flags,
-          validation_statuses: newOptions.validation_statuses,
-        });
-      })
-      .catch((err) => {
-        DEBUG.apiError('GET', '/api/kg/filters', err);
-      });
-  }, [graphBuilt]);
 
-  // Update filtered options when filters change - cascade filtering
-  useEffect(() => {
-    console.log('[FilterPanel] Cascade filter update, current filters:', filters);
-    
-    let filteredTypes = allOptions.vessel_types;
-    let filteredNames = allOptions.vessel_names;
-    let filteredFlags = allOptions.flags;
-    let filteredStatuses = allOptions.validation_statuses;
-
-    // Fetch filtered options from backend based on current selections
-    const fetchFilteredOptions = async () => {
-      try {
-        const params = new URLSearchParams();
-        if (filters.category) params.append('category', filters.category);
-        if (filters.vessel_type) params.append('vessel_type', filters.vessel_type);
-        if (filters.vessel_name) params.append('vessel_name', filters.vessel_name);
-        if (filters.flag) params.append('flag', filters.flag);
-        
-        // If we have any filters, fetch available options for next level
-        if (params.toString()) {
-          const res = await fetch(`${API_BASE_URL}/api/kg/filter-options?${params}`);
-          if (res.ok) {
-            const data = await res.json();
-            console.log('[FilterPanel] Filtered options from backend:', data);
-            filteredTypes = data.vessel_types || allOptions.vessel_types;
-            filteredNames = data.vessel_names || allOptions.vessel_names;
-            filteredFlags = data.flags || allOptions.flags;
-            filteredStatuses = data.validation_statuses || allOptions.validation_statuses;
-          }
-        }
-      } catch (err) {
-        console.error('[FilterPanel] Error fetching filtered options:', err);
-        // Fallback to all options if error
-        filteredTypes = allOptions.vessel_types;
-        filteredNames = allOptions.vessel_names;
-        filteredFlags = allOptions.flags;
-        filteredStatuses = allOptions.validation_statuses;
-      }
-
+    if (graphCache?.allOptions) {
+      // ✅ Use cached data – no backend call needed
+      DEBUG.log('FILTERPANEL', 'Using cached filter options', graphCache.allOptions);
+      const opts = graphCache.allOptions;
+      setAllOptions(opts);
       setFilteredOptions({
-        categories: allOptions.categories, // Categories always show all available
-        vessel_types: filteredTypes,
-        vessel_names: filteredNames,
-        flags: filteredFlags,
-        validation_statuses: filteredStatuses,
+        categories: opts.categories,
+        vessel_types: opts.vessel_types,
+        vessel_names: opts.vessel_names,
+        flags: opts.flags,
+        validation_statuses: opts.validation_statuses,
       });
-    };
+    } else {
+      // ⚠️ Fallback: fetch from backend (may fail on stateless serverless)
+      DEBUG.log('FILTERPANEL', 'No cache – loading filters from backend...');
+      DEBUG.api('GET', `${API_BASE_URL}/api/kg/filters`);
+      fetch(`${API_BASE_URL}/api/kg/filters`)
+        .then(r => {
+          DEBUG.apiResponse('GET', `${API_BASE_URL}/api/kg/filters`, r.status);
+          return r.json();
+        })
+        .then(data => {
+          DEBUG.info('FILTERPANEL', 'Filters API response received', data);
+          const newOptions = {
+            categories: data.categories || [],
+            vessel_types: data.vessel_types || [],
+            vessel_names: data.vessel_names || [],
+            flags: data.flags || [],
+            validation_statuses: data.validation_statuses || [],
+            vessel_count: data.vessel_count || 0,
+          };
+          DEBUG.log('FILTERPANEL', `Processed ${newOptions.categories.length} categories, ${newOptions.vessel_types.length} types`, newOptions);
+          setAllOptions(newOptions);
+          setFilteredOptions({
+            categories: newOptions.categories,
+            vessel_types: newOptions.vessel_types,
+            vessel_names: newOptions.vessel_names,
+            flags: newOptions.flags,
+            validation_statuses: newOptions.validation_statuses,
+          });
+        })
+        .catch((err) => {
+          DEBUG.apiError('GET', '/api/kg/filters', err);
+        });
+    }
+  }, [graphBuilt, graphCache]);
 
-    fetchFilteredOptions();
-  }, [filters, allOptions]);
+  // ── Cascade filter update ────────────────────────────────────────────────
+  // Re-compute available options whenever the user changes a filter selection.
+  useEffect(() => {
+    DEBUG.log('FILTERPANEL', 'Cascade filter update, current filters:', filters);
+
+    if (graphCache?.vesselMeta) {
+      // ✅ Client-side cascade – zero backend calls
+      const opts = computeCascadeOptions(graphCache.vesselMeta, filters);
+      setFilteredOptions({
+        categories: graphCache.allOptions.categories, // categories always show all
+        vessel_types: opts.vessel_types,
+        vessel_names: opts.vessel_names,
+        flags: opts.flags,
+        validation_statuses: opts.validation_statuses,
+      });
+    } else {
+      // ⚠️ Fallback: cascade via backend API
+      const fetchFilteredOptions = async () => {
+        try {
+          const params = new URLSearchParams();
+          if (filters.category) params.append('category', filters.category);
+          if (filters.vessel_type) params.append('vessel_type', filters.vessel_type);
+          if (filters.vessel_name) params.append('vessel_name', filters.vessel_name);
+          if (filters.flag) params.append('flag', filters.flag);
+
+          if (params.toString()) {
+            const res = await fetch(`${API_BASE_URL}/api/kg/filter-options?${params}`);
+            if (res.ok) {
+              const data = await res.json();
+              DEBUG.log('FILTERPANEL', 'Filtered options from backend:', data);
+              setFilteredOptions({
+                categories: allOptions.categories,
+                vessel_types: data.vessel_types || allOptions.vessel_types,
+                vessel_names: data.vessel_names || allOptions.vessel_names,
+                flags: data.flags || allOptions.flags,
+                validation_statuses: data.validation_statuses || allOptions.validation_statuses,
+              });
+              return;
+            }
+          }
+        } catch (err) {
+          DEBUG.apiError('FILTERPANEL', '/api/kg/filter-options', err);
+        }
+        // Fallback to all options
+        setFilteredOptions({
+          categories: allOptions.categories,
+          vessel_types: allOptions.vessel_types,
+          vessel_names: allOptions.vessel_names,
+          flags: allOptions.flags,
+          validation_statuses: allOptions.validation_statuses,
+        });
+      };
+      fetchFilteredOptions();
+    }
+  }, [filters, graphCache, allOptions]);
 
   const update = (key, value) => {
     const next = { ...filters, [key]: value || undefined };

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import DEBUG from '../debug';
-import { API_BASE_URL, apiFormData } from '../api';
+import { API_BASE_URL } from '../api';
 
 /**
  * Dashboard – main landing page.
@@ -70,7 +70,7 @@ const VALIDATION_RULES = {
   },
 };
 
-export default function Dashboard({ status, refreshStatus }) {
+export default function Dashboard({ status, refreshStatus, onGraphBuilt }) {
   const [loading, setLoading] = useState('');
   const [analysisResult, setAnalysisResult] = useState(null);
   const [validationResult, setValidationResult] = useState(null);
@@ -205,9 +205,72 @@ export default function Dashboard({ status, refreshStatus }) {
     refreshStatus();
   };
 
+  // ---- Fetch & Cache all graph data after build  ----
+  // This is the core of the offline-first strategy: fetch everything once, store in
+  // App-level state + sessionStorage, so all subsequent tab navigations use local data.
+  const fetchAndCacheGraphData = async (nodeCount, relCount) => {
+    try {
+      DEBUG.log('DASHBOARD', 'Fetching graph data for client-side cache...');
+      // Fetch filter options AND full graph data in parallel (one round-trip)
+      const [filterRes, graphRes] = await Promise.all([
+        fetch(`${API_BASE_URL}/api/kg/filters`),
+        fetch(`${API_BASE_URL}/api/kg/data`),
+      ]);
+
+      if (!filterRes.ok || !graphRes.ok) {
+        DEBUG.warn('DASHBOARD', `Cache fetch failed: filters=${filterRes.status}, graph=${graphRes.status}`);
+        setMessage(`✅ Graph built: ${nodeCount} nodes, ${relCount} relationships. (Cache unavailable)`);
+        return;
+      }
+
+      const [filterOptions, graphData] = await Promise.all([
+        filterRes.json(),
+        graphRes.json(),
+      ]);
+
+      // Extract compact vessel metadata for client-side cascade filtering
+      // Only keep fields needed for dropdowns – keeps storage small
+      const vesselMeta = (graphData.nodes || [])
+        .filter(n => n.labels?.includes('Vessel'))
+        .map(n => ({
+          id: n.id,
+          name: n.properties?.name || '',
+          category: n.properties?.category || '',
+          vessel_type: n.properties?.vessel_type || '',
+          flag: n.properties?.flag || '',
+          validation_status: n.properties?.validation_status || '',
+        }));
+
+      const cache = {
+        allOptions: {
+          categories: filterOptions.categories || [],
+          vessel_types: filterOptions.vessel_types || [],
+          vessel_names: filterOptions.vessel_names || [],
+          flags: filterOptions.flags || [],
+          validation_statuses: filterOptions.validation_statuses || [],
+          vessel_count: filterOptions.vessel_count || vesselMeta.length,
+        },
+        vesselMeta,
+        allGraphData: graphData,
+        fetchedAt: Date.now(),
+      };
+
+      if (onGraphBuilt) {
+        onGraphBuilt(cache);
+      }
+
+      setMessage(`✅ Graph built: ${nodeCount} nodes, ${relCount} relationships. ${vesselMeta.length} vessels cached locally.`);
+      DEBUG.info('DASHBOARD', `Graph cache ready: ${vesselMeta.length} vessels, ${graphData.nodes?.length} total nodes`);
+    } catch (e) {
+      DEBUG.apiError('DASHBOARD', 'fetchAndCacheGraphData', e);
+      setMessage(`✅ Graph built: ${nodeCount} nodes, ${relCount} relationships. (Could not cache locally: ${e.message})`);
+    }
+  };
+
   // ---- Build Knowledge Graph ----
   const handleBuildGraph = async () => {
     setLoading('graph');
+    setMessage('Building knowledge graph...');
     try {
       const res = await fetch(`${API_BASE_URL}/api/build-graph`, { method: 'POST' });
       const data = await res.json();
@@ -215,7 +278,9 @@ export default function Dashboard({ status, refreshStatus }) {
         setGraphResult(data);
         const nodeCount = data.nodes_created || 0;
         const relCount = data.relationships_created || 0;
-        setMessage(`✅ Graph built: ${nodeCount} nodes, ${relCount} relationships.`);
+        setMessage(`Graph built. Fetching data for offline use...`);
+        // Fetch and cache ALL graph data so future navigation uses local data
+        await fetchAndCacheGraphData(nodeCount, relCount);
       } else {
         setMessage(`Error building graph: ${data.detail}`);
       }
